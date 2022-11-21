@@ -125,7 +125,7 @@
             </q-input>
 
             <div class="col-4 row items-center justify-end">
-              <q-btn to="/login" label="Log out" class="bg-negative"></q-btn>
+              <q-btn @click="logout" label="Log out" class="bg-negative"></q-btn>
             </div>
           </div>
         </div>
@@ -255,6 +255,7 @@ export default defineComponent({
       lastMessageOf: 'lastMessageOf'
     }),
     activeChannel () {
+      console.log('Active channel is: ' + this.$store.state.channels.active)
       return this.$store.state.channels.active
     },
     currentUser () {

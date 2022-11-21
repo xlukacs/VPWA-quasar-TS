@@ -30,47 +30,8 @@
         ></q-avatar>
       </q-item-section>
       <q-item-section>{{ channel }}</q-item-section>
-      <q-item-section>{{ lastMessageOf(channel)?.content || '' }}</q-item-section>
+      <q-item-section>{{ lastMessageOf(channel)?.content || 'Placeholder text...' }}</q-item-section>
     </q-item>
-    <!-- <q-item clickable v-ripple
-      > class="bg-info" -> highlight channel if invited
-      <q-item-section avatar>
-        <q-avatar
-          rounded
-          color="green"
-          text-color="white"
-          icon="group"
-        ></q-avatar>
-      </q-item-section>
-
-      <q-item-section>Normal channel</q-item-section>
-    </q-item>
-     @click="openedChannel.index = 0" Change active channel with Pinia TODO
-    <q-item clickable v-ripple>
-      <q-item-section avatar>
-        <q-avatar
-          rounded
-          color="blue"
-          text-color="white"
-          icon="group"
-        ></q-avatar>
-      </q-item-section>
-
-      <q-item-section>Owned channel</q-item-section>
-      <q-btn round flat icon="settings" @click="channelEditor = true"></q-btn>
-    </q-item>
-    <q-item clickable v-ripple>
-      <q-item-section avatar>
-        <q-avatar
-          rounded
-          color="orange"
-          text-color="white"
-          icon="lock"
-        ></q-avatar>
-      </q-item-section>
-
-      <q-item-section>Private channel</q-item-section>
-    </q-item> -->
 
     <q-dialog v-model="channelEditor">
       <q-card>
@@ -176,6 +137,7 @@
 
 <script>
 import { ref, defineComponent } from 'vue'
+import { mapMutations } from 'vuex'
 
 export default defineComponent({
   name: 'LeftDrawer',
@@ -191,6 +153,11 @@ export default defineComponent({
         name: 'Channel X'
       }
     }
+  },
+  methods: {
+    ...mapMutations('channels', {
+      setActiveChannel: 'SET_ACTIVE'
+    })
   }
 })
 </script>
