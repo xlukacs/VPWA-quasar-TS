@@ -135,14 +135,17 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import { ref, defineComponent } from 'vue'
 import { mapMutations } from 'vuex'
+import { api } from 'src/boot/axios'
+import { User } from 'src/contracts'
 
 export default defineComponent({
   name: 'LeftDrawer',
   setup () {
     return {
+      channels: [],
       createChannel: ref(false),
       channelEditor: ref(false),
       options: ['Public', 'Private'],
@@ -154,10 +157,25 @@ export default defineComponent({
       }
     }
   },
+  computed: {
+    currentUser () {
+      return this.$store.state.auth.user?.id
+    }
+  },
   methods: {
     ...mapMutations('channels', {
       setActiveChannel: 'SET_ACTIVE'
-    })
+    }),
+    setActiveChannel (channel: string) {
+      this.setActiveChannel(channel)
+    },
+    async populateChannelList () {
+      const res = await api.post('user/getChannels', this.currentUser)
+      this.channels = res.data
+    }
+  },
+  mounted () {
+    this.populateChannelList() 
   }
 })
 </script>

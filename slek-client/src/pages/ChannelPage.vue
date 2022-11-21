@@ -315,6 +315,8 @@ export default defineComponent({
     },
 
     async send () {
+      this.setActiveChannel('general')
+
       this.loading = true
       await this.addMessage({ channel: this.activeChannel, message: this.newMessageText })
       this.newMessageText = ''
@@ -341,8 +343,9 @@ export default defineComponent({
       console.log(message.content)
       return true
     },
-    getAuthorPicture (message: SerializedMessage) {
-      console.log('Looking for pic of user:' + message.author.id)
+    getAuthorPicture () {
+      //   message: SerializedMessage
+      //   console.log('Looking for pic of user:' + message.author.id)
       const picture = 'https://cdn.quasar.dev/img/avatar5.jpg' // TODO change this from static
       return picture
     }
