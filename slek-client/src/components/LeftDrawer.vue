@@ -1,25 +1,11 @@
 <template>
   <q-list>
-    <!-- active -->
-    <q-item clickable v-ripple class="bg-info">
-      <q-item-section avatar>
-        <q-avatar
-          rounded
-          color="purple"
-          text-color="white"
-          icon="group"
-        ></q-avatar>
-      </q-item-section>
-
-      <q-item-section>Highlighted channel</q-item-section>
-    </q-item>
-
     <q-item
-      v-for="(channel, index) in channels"
-      :key="index"
+      v-for="channel in channels"
+      :key="channel.index"
       clickable
       v-ripple
-      @click="setActiveChannel(channel)"
+      @click="setActiveChannel(channel.name)"
     >
       <q-item-section avatar>
         <q-avatar
@@ -29,9 +15,10 @@
           icon="group"
         ></q-avatar>
       </q-item-section>
-      <q-item-section>{{ channel }}</q-item-section>
-      <q-item-section>{{ lastMessageOf(channel)?.content || 'Placeholder text...' }}</q-item-section>
+      <q-item-section>{{ channel.name }}</q-item-section>
+      <q-item-section>{{ lastMessageOf(channel.name)?.content || 'Placeholder text...' }}</q-item-section>
     </q-item>
+    <q-btn color="primary" icon="check" label="Refresh" @click="populateChannelList" />
 
     <q-dialog v-model="channelEditor">
       <q-card>
@@ -104,10 +91,10 @@
         </q-bar>
 
         <q-card-section class="q-pt-md column justify-center">
-          <q-input standout v-model="text" label="Channel name"></q-input>
+          <q-input standout v-model="newChannelName" label="Channel name"></q-input>
           <q-select
             standout
-            v-model="model"
+            v-model="newChannelVisibility"
             :options="options"
             label="Visibility"
             class="q-mt-md"
@@ -128,7 +115,7 @@
         </q-card-section>
 
         <q-card-section>
-          <q-btn color="secondary" icon="save" label="Create channel"></q-btn>
+          <q-btn color="secondary" icon="save" label="Create channel" @click="createChannel"></q-btn>
         </q-card-section>
       </q-card>
     </q-dialog>
@@ -137,45 +124,50 @@
 
 <script lang="ts">
 import { ref, defineComponent } from 'vue'
-import { mapMutations } from 'vuex'
-import { api } from 'src/boot/axios'
-import { User } from 'src/contracts'
+import { mapMutations, mapGetters, mapActions } from 'vuex'
 
 export default defineComponent({
   name: 'LeftDrawer',
   setup () {
     return {
-      channels: [],
-      createChannel: ref(false),
-      channelEditor: ref(false),
+      newChannelName: '',
+      newChannelVisibility: null,
+      createChannel: false,
+      channelEditor: false,
       options: ['Public', 'Private'],
       color: ref('#2d49e3'),
       secondColor: ref('#027be3'),
       openedChannel: {
         index: 0,
         name: 'Channel X'
-      }
+      },
+      loading: false
     }
   },
   computed: {
-    currentUser () {
-      return this.$store.state.auth.user?.id
-    }
+    ...mapGetters('channels', {
+      channels: 'joinedChannels',
+      lastMessageOf: 'lastMessageOf'
+    }),
   },
   methods: {
     ...mapMutations('channels', {
       setActiveChannel: 'SET_ACTIVE'
     }),
-    setActiveChannel (channel: string) {
-      this.setActiveChannel(channel)
-    },
-    async populateChannelList () {
-      const res = await api.post('user/getChannels', this.currentUser)
-      this.channels = res.data
+    ...mapActions('channels', ['populateChannelList', 'addChannel']),
+    async createChannel(){
+      this.loading = true
+      this.addChannel({name: })
+      this.loading = false
     }
   },
-  mounted () {
-    this.populateChannelList() 
+  beforeMount () {
+    this.populateChannelList()
+
+    // setTimeout(() => {
+    //   console.log('CHANNEL LIST')
+    //   console.log(this.channels);
+    // }, 500);
   }
 })
 </script>

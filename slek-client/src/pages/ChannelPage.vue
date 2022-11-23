@@ -255,7 +255,7 @@ export default defineComponent({
       lastMessageOf: 'lastMessageOf'
     }),
     activeChannel () {
-      console.log('Active channel is: ' + this.$store.state.channels.active)
+      //console.log('Active channel is: ' + this.$store.state.channels.active)
       return this.$store.state.channels.active
     },
     currentUser () {
@@ -340,7 +340,7 @@ export default defineComponent({
       else return 'grey-4'
     },
     extractPossiblePing (message: SerializedMessage) {
-      console.log(message.content)
+      //console.log(message.content)
       return true
     },
     getAuthorPicture () {
