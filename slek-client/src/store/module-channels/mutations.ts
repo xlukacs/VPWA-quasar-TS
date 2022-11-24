@@ -21,6 +21,11 @@ const mutation: MutationTree<ChannelsStateInterface> = {
   },
   SET_ACTIVE (state, channel: string) {
     state.active = channel
+
+    state.channels.forEach(tempChannel => {
+      if(tempChannel.name == channel)
+        state.activeChannel = tempChannel;
+    })
   },
   NEW_MESSAGE (state, { channel, message }: { channel: string, message: SerializedMessage }) {
     state.messages[channel].push(message)

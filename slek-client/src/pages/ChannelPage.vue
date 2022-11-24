@@ -44,7 +44,7 @@
         </q-toolbar-title>
 
         <!-- :dense="dense" -->
-        <q-input
+        <!-- <q-input
           borderless
           bottom-slots
           v-model="channelSearchQuery"
@@ -55,9 +55,9 @@
           <template v-slot:append>
             <q-icon name="search"></q-icon>
           </template>
-        </q-input>
+        </q-input> -->
 
-        <div class="col-md-3 row items-center justify-end">
+        <div class="col-md-9 row items-center justify-end">
           <q-btn to="/login" label="Log out" class="bg-negative"></q-btn>
         </div>
       </q-toolbar>
@@ -111,7 +111,7 @@
 
           <div class="row">
             <!-- :dense="dense" -->
-            <q-input
+            <!-- <q-input
               borderless
               bottom-slots
               v-model="channelSearchQuery"
@@ -122,9 +122,9 @@
               <template v-slot:append>
                 <q-icon name="search"></q-icon>
               </template>
-            </q-input>
+            </q-input> -->
 
-            <div class="col-4 row items-center justify-end">
+            <div class="col-12 row items-center justify-end">
               <q-btn @click="logout" label="Log out" class="bg-negative"></q-btn>
             </div>
           </div>
@@ -188,7 +188,8 @@
             :bg-color="getColor(message)"
             :text-color="isMine(message) ? 'white' : 'black'"
             size="6"
-            :avatar="getAuthorPicture(message)"
+            :avatar="getAuthorPicture()"
+            :class="isUserTagged(message.content) ? 'mentionedMessage' : ''"
           />
         </q-scroll-area>
         <div v-if="typingCount == 1" class="col-1 q-ml-md special-zone">
@@ -280,7 +281,7 @@ export default defineComponent({
     return {
       isHamburgerOpen: false,
       showTopHamburger: false,
-      channelSearchQuery: '',
+      // channelSearchQuery: '',
       leftDrawerOpen: true,
       rightDrawerOpen: true,
       newMessageText: '',
@@ -295,6 +296,22 @@ export default defineComponent({
     }
   },
   methods: {
+    isUserTagged (message:string) {
+      const words = message.split(' ')
+      const ownMentionTag = '#' + this.$store.state.auth.user?.username
+      
+      let found = false
+      words.forEach(word => {
+        // console.log(word + '/' + ownMentionTag)
+        if (word == ownMentionTag && !found){
+          // console.log(message + '/' + ownMentionTag + ' FOUND')
+          found = true
+        } 
+      })
+      
+      // console.log(message + '/' + ownMentionTag + ' FALSE')
+      return found
+    },
     getMessageAreaHeight: (
       isHamburgerOpen: boolean,
       typingCount: number
@@ -373,3 +390,10 @@ export default defineComponent({
   }
 })
 </script>
+
+
+<style scoped>
+.mentionedMessage{
+  border: 2px solid red;
+}
+</style>

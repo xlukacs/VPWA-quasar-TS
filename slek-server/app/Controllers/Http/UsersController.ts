@@ -14,10 +14,10 @@ export default class UsersController {
         var channels = []
 
         channels_prefetched[0].$preloaded.channels.forEach((channel) => {
-            channels.push({ name: channel.$attributes.name, index: channel.$attributes.id })
+            channels.push({ name: channel.$attributes.name, index: channel.$attributes.id, color: channel.$attributes.color, isPublic: channel.$attributes.isPublic })
         })
 
-        //console.log(channels)
+        console.log(channels)
 
         return channels
     }

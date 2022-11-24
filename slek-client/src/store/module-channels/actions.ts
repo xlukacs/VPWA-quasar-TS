@@ -38,7 +38,7 @@ const actions: ActionTree<ChannelsStateInterface, StateInterface> = {
       if (Object.prototype.hasOwnProperty.call(channelsData, channel)) {
         const element = channelsData[channel];
 
-        let tempChannel:Channel = { name: element.name, index: element.index, color: 'orange', isPublic: false }
+        let tempChannel:Channel = { name: element.name, index: element.index, color: element.color, isPublic: element.isPublic }
         
         commit('ADD_CHANNEL', tempChannel)
 
@@ -62,33 +62,26 @@ const actions: ActionTree<ChannelsStateInterface, StateInterface> = {
   async leaveChannel({ commit, rootState, state }, channel: string ) {
     const user = rootState.auth.user
     console.log(user)
-    // console.log(channel)
-    // console.log(state.channels)
-    //if (state.channels.includes(channel)) {
-    // console.log("Removing:")
-    // console.log(channel)
+
     const payload = { channel: channel, user: user?.username }
-    console.log(payload)
+
     const response = await api.delete<Channel>('channels/channel_user', { data: payload })
     
-    commit('REMOVE_CHANNEL', channel)
+    this.dispatch('channels/removeChannel', channel);
+
+    console.log(state.messages)
     
     await channelService.in(channel)?.removeChannel(channel)
     
-    this.dispatch('channels/leave', channel, { root: true })
-    
+    channelService.leave(channel)
+
     return response.data
-    //else{
-    //  return null; // TODO what the hell happened here?
-    //} 
   },
     
-  async removeChannel ({ state, commit }, channel: string) {
-    commit('REMOVE_CHANNEL', channel)
+  async removeChannel ({ commit }, channel: string) {
+    commit('CLEAR_CHANNEL', channel)
     
-    if (state.active === channel) {
-      commit('CLEAR_CHANNEL', channel)
-    }
+    commit('REMOVE_CHANNEL', channel)
   }
 }
 

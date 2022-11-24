@@ -1,4 +1,5 @@
 import { RawMessage, SerializedMessage } from 'src/contracts'
+import { channelService } from '.'
 import { BootParams, SocketManager } from './SocketManager'
 
 // creating instance of this class automatically connects to given socket.io namespace

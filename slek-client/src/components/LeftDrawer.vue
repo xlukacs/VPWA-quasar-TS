@@ -1,6 +1,7 @@
 <template>
   <q-list>
     <q-item
+      :class="activeChannel == channel.name ? 'bg-info' : ''"
       v-for="channel in channels"
       :key="channel.index"
       clickable
@@ -10,15 +11,16 @@
       <q-item-section avatar>
         <q-avatar
           rounded
-          color="orange"
+          :color="channel.color"
           text-color="white"
-          icon="group"
+          :icon="channel.isPublic ? 'group' : 'lock'"
         ></q-avatar>
       </q-item-section>
       <q-item-section>{{ channel.name }}</q-item-section>
       <q-item-section>{{ lastMessageOf(channel.name)?.content || 'Placeholder text...' }}</q-item-section>
     </q-item>
 
+    <!-- Channel editor dialog -->
     <q-dialog v-model="channelEditor">
       <q-card>
         <q-toolbar>
@@ -72,6 +74,7 @@
       @click="createChannel = true"
     ></q-btn>
 
+    <!-- Channel creation dialog -->
     <q-dialog
       v-model="createChannel"
       persistent
@@ -99,19 +102,13 @@
             label="Visibility"
             class="q-mt-md"
           ></q-select>
-          <q-input filled v-model="color" class="channel-color-picker q-mt-md">
-            <template v-slot:append>
-              <q-icon name="colorize" class="cursor-pointer">
-                <q-popup-proxy
-                  cover
-                  transition-show="scale"
-                  transition-hide="scale"
-                >
-                  <q-color v-model="color"></q-color>
-                </q-popup-proxy>
-              </q-icon>
-            </template>
-          </q-input>
+          <q-select
+            standout
+            v-model="newChannelColor"
+            :options="colorOptions"
+            label="Channel color"
+            class="q-mt-md"
+          ></q-select>
         </q-card-section>
 
         <q-card-section>
@@ -130,10 +127,9 @@ export default defineComponent({
   name: 'LeftDrawer',
   setup () {
     return {
-      newChannelName: '',
-      newChannelVisibility: null,
       channelEditor: false,
       options: ['Public', 'Private'],
+      colorOptions: ['Red', 'Green', 'Blue', 'Orange'],
       color: ref('#2d49e3'),
       secondColor: ref('#027be3'),
       openedChannel: {
@@ -146,17 +142,17 @@ export default defineComponent({
   data() {
     return {
       createChannel: false,
+      newChannelName: '',
+      newChannelVisibility: null,
+      newChannelColor: null
     }
   },
   computed: {
     ...mapGetters('channels', {
       channels: 'joinedChannels',
-      lastMessageOf: 'lastMessageOf'
+      lastMessageOf: 'lastMessageOf',
+      activeChannel: 'getActiveChannelName'
     }),
-    // toggleChannelWizzard(){
-    //   this.createChannel = !this.createChannel;
-    //   return this.createChannel;
-    // }
   },
   methods: {
     ...mapMutations('channels', {
@@ -170,9 +166,19 @@ export default defineComponent({
       if(this.newChannelVisibility == 'Public')
         canBePublic = true
 
-      let channel = { name: this.newChannelName, color: this.color, isPublic: canBePublic }
+      let newChannelThemeColor = 'orange';
+      if(this.newChannelColor == 'Red')
+        newChannelThemeColor = "red-7";
+      if(this.newChannelColor == 'Green')
+        newChannelThemeColor = "green-7";
+      if(this.newChannelColor == 'Blue')
+        newChannelThemeColor = "primary";
+
+      let channel = { name: this.newChannelName, color: newChannelThemeColor, isPublic: canBePublic }
       this.addChannel(channel)
       this.loading = false
+
+      this.createChannel = false
     },
     testFunc () {
       console.log(this.createChannel)
