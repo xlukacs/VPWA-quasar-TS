@@ -34,3 +34,7 @@ Route.group(() => {
 Route.group(() => {
   Route.get('getChannels', 'UsersController.getChannels').middleware('auth')
 }).prefix('user')
+
+Route.group(() => {
+  Route.post('createChannel', 'ChannelsController.createChannel').middleware('auth')
+}).prefix('channels')

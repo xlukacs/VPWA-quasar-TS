@@ -126,11 +126,11 @@ export abstract class SocketManager implements SocketManagerContract {
 
     if (DEBUG) {
       socket.on('connect', () => {
-        console.info(`${this.namespace} [connect]`)
+        //console.info(`${this.namespace} [connect]`)
       })
 
       socket.on('disconnect', (reason) => {
-        console.info(`${this.namespace} [disconnect]`, reason)
+        //console.info(`${this.namespace} [disconnect]`, reason)
       })
 
       socket.on('error', (err: Error) => {
@@ -138,7 +138,7 @@ export abstract class SocketManager implements SocketManagerContract {
       })
 
       socket.onAny((event, ...args) => {
-        console.info(`${this.namespace} [${event}]`, args)
+        //console.info(`${this.namespace} [${event}]`, args)
       })
     }
 

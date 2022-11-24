@@ -2,7 +2,7 @@ import { ActionTree } from 'vuex'
 import { StateInterface } from '../index'
 import { ChannelsStateInterface } from './state'
 import { channelService } from 'src/services'
-import { RawMessage, Channel } from 'src/contracts'
+import { RawMessage, Channel, SerializedMessage, User } from 'src/contracts'
 import { api } from 'src/boot/axios'
 
 const actions: ActionTree<ChannelsStateInterface, StateInterface> = {
@@ -10,8 +10,8 @@ const actions: ActionTree<ChannelsStateInterface, StateInterface> = {
     try {
       commit('LOADING_START')
       const messages = await channelService.join(channel).loadMessages()
+      console.log(messages)
       commit('LOADING_SUCCESS', { channel, messages })
-      console.log('Joined: ' + channel)
     } catch (err) {
       commit('LOADING_ERROR', err)
       throw err
@@ -33,43 +33,32 @@ const actions: ActionTree<ChannelsStateInterface, StateInterface> = {
   async populateChannelList ({ commit }) {
     // first load of the channels and data from DB on mount of the page
     const channelsData = (await api.get('user/getChannels')).data
-    console.log(channelsData)
     
     for (const channel in channelsData) {
       if (Object.prototype.hasOwnProperty.call(channelsData, channel)) {
         const element = channelsData[channel];
+
         let tempChannel:Channel = { name: element.name, index: element.index, color: 'orange', isPublic: false }
         commit('ADD_CHANNEL', tempChannel)
-        this.dispatch('channels/join', tempChannel.name)  
+        console.log("HERE: " + tempChannel.name)
+        this.dispatch('channels/join', tempChannel.name, { root: true })          
       }
     }
-    // for (let index = 0; index < recentChannelsData.length; index++) {
-    //   commit('ADD_RECENT_CHANNEL', recentChannelsData[index])
-    //   this.dispatch('channels/join', recentChannelsData[index].name, { root: true })
-    // }
-    // let found = false
-    // const channelsData = (await api.get('channels')).data
 
-    // for (let index = 0; index < channelsData.length; index++) {
-    //   found = false
-    //   for (let i = 0; i < recentChannelsData.length; i++) {
-    //     if (recentChannelsData[i].name === channelsData[index].name) {
-    //       found = true
-    //       break
-    //     }
-    //   }
-    //   if (!found) {
-    //     this.dispatch('channels/join', channelsData[index].name, { root: true })
-    //     commit('ADD_JOINED_CHANNEL', channelsData[index])
-    //   }
-    // }
-    // const invitedChannelsData = (await api.get('invitedchannels')).data
-
-    // for (let index = 0; index < invitedChannelsData.length; index++) {
-    //   commit('ADD_INVITED_CHANNEL', invitedChannelsData[index])
-    // }
-    // get invited channels
+    // commit("CLEAN_CHANNELS")
   },
+
+  async addChannel({ commit }, data: Channel ) {
+    const response  = await api.post<Channel>('channels/createChannel', data)
+    const channel = response.data
+
+    this.dispatch('channels/join', channel.name)
+    commit('ADD_CHANNEL', channel)
+    commit('CHANNEL_ADDED', { channel, messages: [] as unknown as SerializedMessage, members: {} as User[] })
+    commit('SET_ACTIVE', channel)
+
+    return channel
+  }
 }
 
 export default actions

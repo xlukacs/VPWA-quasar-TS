@@ -1,4 +1,4 @@
-import { SerializedMessage, Channel } from 'src/contracts'
+import { SerializedMessage, Channel, User } from 'src/contracts'
 import { MutationTree } from 'vuex'
 import { ChannelsStateInterface } from './state'
 
@@ -27,7 +27,17 @@ const mutation: MutationTree<ChannelsStateInterface> = {
   },
   ADD_CHANNEL(state, channel:Channel) {
     state.channels.push(channel)
-  }
+  },
+  CHANNEL_ADDED (state, { channel, messages, members }: { channel: string, messages: SerializedMessage[], activeChannel:Channel, members: User[]}) {
+    state.loading = false
+    state.messages[channel] = messages
+    state.usersInChat[channel] = members
+  },
+  // CLEAN_CHANNELS(state, channel) {
+  //   state.active = null
+  //   state.channel = null
+  //   delete state.messages[channel]
+  // }
 }
 
 export default mutation

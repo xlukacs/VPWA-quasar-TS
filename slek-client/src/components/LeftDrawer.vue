@@ -18,7 +18,8 @@
       <q-item-section>{{ channel.name }}</q-item-section>
       <q-item-section>{{ lastMessageOf(channel.name)?.content || 'Placeholder text...' }}</q-item-section>
     </q-item>
-    <q-btn color="primary" icon="check" label="Refresh" @click="populateChannelList" />
+
+    <q-btn color="primary" icon="check" label="Refresh" @click="testFunc" />
 
     <q-dialog v-model="channelEditor">
       <q-card>
@@ -64,6 +65,7 @@
       </q-card>
     </q-dialog>
   </q-list>
+
   <div class="row justify-center q-mt-md">
     <q-btn
       color="primary"
@@ -115,7 +117,7 @@
         </q-card-section>
 
         <q-card-section>
-          <q-btn color="secondary" icon="save" label="Create channel" @click="createChannel"></q-btn>
+          <q-btn color="secondary" icon="save" label="Create channel" @click="createChannelMethod"></q-btn>
         </q-card-section>
       </q-card>
     </q-dialog>
@@ -155,19 +157,23 @@ export default defineComponent({
       setActiveChannel: 'SET_ACTIVE'
     }),
     ...mapActions('channels', ['populateChannelList', 'addChannel']),
-    async createChannel(){
+    async createChannelMethod(){
       this.loading = true
-      this.addChannel({name: })
+
+      let canBePublic = false
+      if(this.newChannelVisibility == 'Public')
+        canBePublic = true
+
+      let channel = { name: this.newChannelName, color: this.color, isPublic: canBePublic }
+      this.addChannel(channel)
       this.loading = false
+    },
+    testFunc () {
+      console.log(this.createChannel)
     }
   },
   beforeMount () {
     this.populateChannelList()
-
-    // setTimeout(() => {
-    //   console.log('CHANNEL LIST')
-    //   console.log(this.channels);
-    // }, 500);
   }
 })
 </script>

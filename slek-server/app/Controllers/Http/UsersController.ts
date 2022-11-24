@@ -8,8 +8,8 @@ export default class UsersController {
         //const channels = await Channel.query().where('user_id', '=', auth.user.id)
         const channels_prefetched = await User.query().where('id', '=', auth.user.id).preload('channels');
 
-        console.log(channels_prefetched)
-        console.log(channels_prefetched[0].$preloaded.channels[0].$attributes.id)
+        //console.log(channels_prefetched)
+        //console.log(channels_prefetched[0].$preloaded.channels[0].$attributes.id)
 
         var channels = []
 
@@ -17,7 +17,7 @@ export default class UsersController {
             channels.push({ name: channel.$attributes.name, index: channel.$attributes.id })
         })
 
-        console.log(channels)
+        //console.log(channels)
 
         return channels
     }

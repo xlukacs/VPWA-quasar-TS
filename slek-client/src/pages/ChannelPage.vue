@@ -315,7 +315,8 @@ export default defineComponent({
     },
 
     async send () {
-      this.setActiveChannel('general')
+      //this.setActiveChannel('general')
+      console.log(this.activeChannel)
 
       this.loading = true
       await this.addMessage({ channel: this.activeChannel, message: this.newMessageText })

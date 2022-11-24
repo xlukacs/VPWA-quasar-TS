@@ -33,7 +33,7 @@ api.interceptors.request.use(
     }
 
     if (DEBUG) {
-      console.info('-> ', config)
+      //console.info('-> ', config)
     }
 
     return config
@@ -51,7 +51,7 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => {
     if (DEBUG) {
-      console.info('<- ', response)
+      //console.info('<- ', response)
     }
 
     return response
