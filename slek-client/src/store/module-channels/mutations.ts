@@ -41,11 +41,6 @@ const mutation: MutationTree<ChannelsStateInterface> = {
   REMOVE_CHANNEL ( state, { channel } :  {channel: Channel}){
     state.channels.splice(state.channels.indexOf(channel), 1);
   }
-  // CLEAN_CHANNELS(state, channel) {
-  //   state.active = null
-  //   state.channel = null
-  //   delete state.messages[channel]
-  // }
 }
 
 export default mutation

@@ -15,6 +15,16 @@ const routes: RouteRecordRaw[] = [
     ]
   },
   {
+    path: '/login',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      {
+        path: '', 
+        component: () => import('src/pages/LoginPage.vue')
+      }
+    ]
+  },
+  {
     path: '/channels',
     name: 'home',
     // channels requires auth

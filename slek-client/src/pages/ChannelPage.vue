@@ -189,7 +189,6 @@
             :text-color="isMine(message) ? 'white' : 'black'"
             size="6"
             :avatar="getAuthorPicture()"
-            :class="isUserTagged(message.content) ? 'mentionedMessage' : ''"
           />
         </q-scroll-area>
         <div v-if="typingCount == 1" class="col-1 q-ml-md special-zone">
@@ -297,6 +296,7 @@ export default defineComponent({
   },
   methods: {
     isUserTagged (message:string) {
+      // :class="isUserTagged(message.content) ? 'mentionedMessage' : ''"
       const words = message.split(' ')
       const ownMentionTag = '#' + this.$store.state.auth.user?.username
       
@@ -370,13 +370,9 @@ export default defineComponent({
       area && area.setScrollPercentage('vertical', 1.1)
     },
     getColor (message: SerializedMessage): string {
-      if (this.extractPossiblePing(message)) return 'secondary'
+      if (this.isUserTagged(message.content)) return 'secondary'
       if (this.isMine(message)) return 'primary'
       else return 'grey-4'
-    },
-    extractPossiblePing (message: SerializedMessage) {
-      //console.log(message.content)
-      return true
     },
     getAuthorPicture () {
       //   message: SerializedMessage

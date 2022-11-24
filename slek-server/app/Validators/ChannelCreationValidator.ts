@@ -26,7 +26,7 @@ export default class ChannelCreationValidator {
   public schema = schema.create({
     name: schema.string({}, []),
     color: schema.string({}, []),
-    isPublic: schema.boolean(),
+    isPublic: schema.boolean()
   })
 
   /**

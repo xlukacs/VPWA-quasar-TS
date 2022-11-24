@@ -13,8 +13,14 @@ export default class UsersController {
 
         var channels = []
         channels_prefetched[0].$preloaded.channels.forEach((channel) => {
-            channels.push({ name: channel.$attributes.name, index: channel.$attributes.id, color: channel.$attributes.color, isPublic: channel.$attributes.isPublic })
-        })
+            channels.push({ 
+                name: channel.$attributes.name, 
+                index: channel.$attributes.id, 
+                color: channel.$attributes.color, 
+                isPublic: channel.$attributes.isPublic, 
+                owner: channel.$attributes.creator_id
+            })
+        })//TODO add owner from DB
 
         publicChannels.forEach(channel => {
             let found = false
@@ -24,7 +30,7 @@ export default class UsersController {
             })
 
             if(!found)
-                channels.push({ name: channel.name, index: channel.id, color: channel.color, isPublic: channel.isPublic })
+                channels.push({ name: channel.name, index: channel.id, color: channel.color, isPublic: channel.isPublic, owner: channel.creator_id })
         })
 
         console.log(channels)

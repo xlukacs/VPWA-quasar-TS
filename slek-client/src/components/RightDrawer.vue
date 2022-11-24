@@ -1,18 +1,18 @@
 <template>
   <div class="row items-center">
     <div class="col-8">
-      <h5 class="q-ma-sm">{{ openedChannel.name }}</h5>
+      <h5 class="q-ma-sm">{{ activeChannel }}</h5>
     </div>
     <div class="col">
       <q-btn
-        v-if="isUserModerator"
+        v-if="ownId == channelOwner && channelOwner != undefined"
         dense
         color="negative"
         icon="delete"
         label="Delete"
       />
       <q-btn
-        v-if="!isUserModerator"
+        v-if="ownId != channelOwner && channelOwner != undefined"
         dense
         color="negative"
         icon="logout"
@@ -20,7 +20,7 @@
       />
     </div>
   </div>
-  <div class="row q-mb-sm">
+  <div class="row q-mb-sm q-mt-md">
     <div class="col-12">
       <q-input dense standout rounded label="Search for user...">
         <template v-slot:append>
@@ -208,18 +208,34 @@
 
 <script>
 import { ref, defineComponent } from 'vue'
+import { mapMutations, mapGetters, mapActions } from 'vuex'
 
 export default defineComponent({
   name: 'RightDrawer',
   setup () {
     return {
       userSettingsPopup: ref(false),
-      isUserModerator: ref(true),
       openedChannel: {
         index: 0,
         name: 'Channel X'
       }
     }
+  },
+  data(){
+    return {
+      isUserModerator: false,
+      ownId: 0
+    }
+  },
+  computed: {
+    ...mapGetters('channels', {
+      channelOwner: 'getChannelCreator'
+    }),
+  },
+  mounted(){
+    console.log(this.channelOwner)
+    // this.isUserModerator = this.$store.state.auth.user?.id == this.$store.state.channels.activeChannel.owner ? true : false
+    this.ownId = this.$store.state.auth.user?.id
   }
 })
 </script>

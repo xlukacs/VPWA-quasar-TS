@@ -4,7 +4,6 @@ import { ChannelsStateInterface } from './state'
 
 const getters: GetterTree<ChannelsStateInterface, StateInterface> = {
   joinedChannels (context) {
-    console.log(context.channels)
     return context.channels
   },
   currentMessages (context) {
@@ -12,6 +11,9 @@ const getters: GetterTree<ChannelsStateInterface, StateInterface> = {
   },
   getActiveChannelName (context){
     return context.active
+  },
+  getChannelCreator(context){
+    return context.activeChannel?.owner;
   },
   lastMessageOf (context) {
     return (channel: string) => {

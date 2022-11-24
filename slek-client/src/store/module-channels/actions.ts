@@ -4,6 +4,7 @@ import { ChannelsStateInterface } from './state'
 import { channelService } from 'src/services'
 import { RawMessage, Channel, SerializedMessage, User } from 'src/contracts'
 import { api } from 'src/boot/axios'
+import auth from 'src/boot/auth'
 
 const actions: ActionTree<ChannelsStateInterface, StateInterface> = {
   async join ({ commit }, channel: string) {
@@ -20,9 +21,12 @@ const actions: ActionTree<ChannelsStateInterface, StateInterface> = {
   async leave ({ getters, commit }, channel: string | null) {
     const leaving: string[] = channel !== null ? [channel] : getters.joinedChannels
 
+    console.log(leaving)
+
     leaving.forEach((c) => {
       channelService.leave(c)
       commit('CLEAR_CHANNEL', c)
+      console.log("Leaving: " + c)
     })
   },
   async addMessage ({ commit }, { channel, message }: { channel: string, message: RawMessage }) {
@@ -30,7 +34,7 @@ const actions: ActionTree<ChannelsStateInterface, StateInterface> = {
     commit('NEW_MESSAGE', { channel, message: newMessage })
   },
 
-  async populateChannelList ({ commit }) {
+  async populateChannelList ({  state, rootState, commit }) {
     // first load of the channels and data from DB on mount of the page
     const channelsData = (await api.get('user/getChannels')).data
     
@@ -38,11 +42,19 @@ const actions: ActionTree<ChannelsStateInterface, StateInterface> = {
       if (Object.prototype.hasOwnProperty.call(channelsData, channel)) {
         const element = channelsData[channel];
 
-        let tempChannel:Channel = { name: element.name, index: element.index, color: element.color, isPublic: element.isPublic }
-        
-        commit('ADD_CHANNEL', tempChannel)
+        let found = false
+        state.channels.forEach(existingChannel => {
+          if(existingChannel.name == element.name || found)
+            found = true;
+        })
 
-        this.dispatch('channels/join', tempChannel.name, { root: true })          
+        if(!found){
+          let tempChannel:Channel = { name: element.name, index: element.index, color: element.color, isPublic: element.isPublic, owner: element.owner}
+          
+          commit('ADD_CHANNEL', tempChannel)
+          
+          this.dispatch('channels/join', tempChannel.name, { root: true })          
+        }
       }
     }
   },
