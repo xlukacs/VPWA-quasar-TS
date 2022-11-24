@@ -4,7 +4,6 @@
       class="col-4 self-center bg-primary q-pa-sm rounded-borders text-center"
     >
       <h3 style="text-align: center; font-weight: bold">Register</h3>
-      <!-- <q-input rounded standout v-model="form.username" label="Username"></q-input> -->
       <q-input
         rounded
         standout

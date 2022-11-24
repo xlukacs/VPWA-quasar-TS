@@ -10,6 +10,9 @@ export default class Channel extends BaseModel {
   public name: string
 
   @column()
+  public creator_id: number
+
+  @column()
   public color: string
 
   @column()

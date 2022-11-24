@@ -9,6 +9,7 @@ export default class Channels extends BaseSchema {
       table.string('name').notNullable().unique()
       table.string('color')
       table.boolean('is_public')
+      table.integer('creator_id')
       /**
        * Uses timestamptz for PostgreSQL and DATETIME2 for MSSQL
        */

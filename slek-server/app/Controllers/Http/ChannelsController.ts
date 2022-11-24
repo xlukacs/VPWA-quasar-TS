@@ -7,6 +7,7 @@ import RemoveUserValidator from 'App/Validators/RemoveUserValidator'
 export default class ChannelsController {
     async createChannel({ auth, request }: HttpContextContract) {
         const validate = await request.validate(ChannelCreationValidator)
+        validate['creator_id'] = auth.user?.id;
         console.log(validate)
         const channel = await Channel.create(validate)
 
@@ -23,5 +24,8 @@ export default class ChannelsController {
         const channel = await Channel.findByOrFail('name', validate.channel)
 
         await user.related('channels').detach([channel.id])
+
+        if(user.id == channel.creator_id)
+            await channel.delete() 
     }
 }
