@@ -10,7 +10,7 @@ const actions: ActionTree<ChannelsStateInterface, StateInterface> = {
     try {
       commit('LOADING_START')
       const messages = await channelService.join(channel).loadMessages()
-      console.log(messages)
+      //console.log(messages)
       commit('LOADING_SUCCESS', { channel, messages })
     } catch (err) {
       commit('LOADING_ERROR', err)
@@ -39,13 +39,12 @@ const actions: ActionTree<ChannelsStateInterface, StateInterface> = {
         const element = channelsData[channel];
 
         let tempChannel:Channel = { name: element.name, index: element.index, color: 'orange', isPublic: false }
+        
         commit('ADD_CHANNEL', tempChannel)
-        console.log("HERE: " + tempChannel.name)
+
         this.dispatch('channels/join', tempChannel.name, { root: true })          
       }
     }
-
-    // commit("CLEAN_CHANNELS")
   },
 
   async addChannel({ commit }, data: Channel ) {
@@ -58,6 +57,38 @@ const actions: ActionTree<ChannelsStateInterface, StateInterface> = {
     commit('SET_ACTIVE', channel)
 
     return channel
+  },
+
+  async leaveChannel({ commit, rootState, state }, channel: string ) {
+    const user = rootState.auth.user
+    console.log(user)
+    // console.log(channel)
+    // console.log(state.channels)
+    //if (state.channels.includes(channel)) {
+    // console.log("Removing:")
+    // console.log(channel)
+    const payload = { channel: channel, user: user?.username }
+    console.log(payload)
+    const response = await api.delete<Channel>('channels/channel_user', { data: payload })
+    
+    commit('REMOVE_CHANNEL', channel)
+    
+    await channelService.in(channel)?.removeChannel(channel)
+    
+    this.dispatch('channels/leave', channel, { root: true })
+    
+    return response.data
+    //else{
+    //  return null; // TODO what the hell happened here?
+    //} 
+  },
+    
+  async removeChannel ({ state, commit }, channel: string) {
+    commit('REMOVE_CHANNEL', channel)
+    
+    if (state.active === channel) {
+      commit('CLEAR_CHANNEL', channel)
+    }
   }
 }
 

@@ -19,8 +19,6 @@
       <q-item-section>{{ lastMessageOf(channel.name)?.content || 'Placeholder text...' }}</q-item-section>
     </q-item>
 
-    <q-btn color="primary" icon="check" label="Refresh" @click="testFunc" />
-
     <q-dialog v-model="channelEditor">
       <q-card>
         <q-toolbar>
@@ -134,7 +132,6 @@ export default defineComponent({
     return {
       newChannelName: '',
       newChannelVisibility: null,
-      createChannel: false,
       channelEditor: false,
       options: ['Public', 'Private'],
       color: ref('#2d49e3'),
@@ -143,7 +140,12 @@ export default defineComponent({
         index: 0,
         name: 'Channel X'
       },
-      loading: false
+      loading: false,
+    }
+  },
+  data() {
+    return {
+      createChannel: false,
     }
   },
   computed: {
@@ -151,6 +153,10 @@ export default defineComponent({
       channels: 'joinedChannels',
       lastMessageOf: 'lastMessageOf'
     }),
+    // toggleChannelWizzard(){
+    //   this.createChannel = !this.createChannel;
+    //   return this.createChannel;
+    // }
   },
   methods: {
     ...mapMutations('channels', {

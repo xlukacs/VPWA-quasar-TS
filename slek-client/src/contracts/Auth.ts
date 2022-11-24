@@ -20,6 +20,7 @@ export interface LoginCredentials {
 export interface User {
   id: number
   email: string
-  createdAt: string,
+  createdAt: string
   updatedAt: string
+  username: string
 }

@@ -10,7 +10,15 @@
         standout
         v-model.trim="form.email"
         type="email"
-        label="Emial"
+        label="Email"
+        class="q-mt-md"
+      ></q-input>
+      <q-input
+        rounded
+        standout
+        type="text"
+        v-model="form.username"
+        label="Username"
         class="q-mt-md"
       ></q-input>
       <q-input
@@ -53,7 +61,7 @@ export default defineComponent({
   name: 'RegisterPage',
   data () {
     return {
-      form: { email: '', password: '', passwordConfirmation: '' },
+      form: { email: '', password: '', passwordConfirmation: '', username: '' },
       showPassword: false
     }
   },

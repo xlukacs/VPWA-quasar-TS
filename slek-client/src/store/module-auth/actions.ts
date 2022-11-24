@@ -5,6 +5,10 @@ import { authService, authManager } from 'src/services'
 import { LoginCredentials, RegisterData } from 'src/contracts'
 
 const actions: ActionTree<AuthStateInterface, StateInterface> = {
+  async getUserName({ state, commit }){
+    return state.user?.username;
+  },
+
   async check ({ state, commit, dispatch }) {
     try {
       commit('AUTH_START')

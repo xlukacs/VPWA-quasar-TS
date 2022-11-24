@@ -11,6 +11,10 @@ class ChannelSocketManager extends SocketManager {
     this.socket.on('message', (message: SerializedMessage) => {
       store.commit('channels/NEW_MESSAGE', { channel, message })
     })
+
+    this.socket.on('removeChannel', async (channelName: string) => {
+      store.dispatch('channels/removeChannel', channelName, { root: true })
+    })
   }
 
   public addMessage (message: RawMessage): Promise<SerializedMessage> {
@@ -19,6 +23,10 @@ class ChannelSocketManager extends SocketManager {
 
   public loadMessages (): Promise<SerializedMessage[]> {
     return this.emitAsync('loadMessages')
+  }
+
+  public removeChannel (channel: string) {
+    return this.emitAsync('removeChannel', channel)
   }
 }
 

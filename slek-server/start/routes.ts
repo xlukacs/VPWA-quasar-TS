@@ -37,4 +37,5 @@ Route.group(() => {
 
 Route.group(() => {
   Route.post('createChannel', 'ChannelsController.createChannel').middleware('auth')
+  Route.delete('channel_user', 'ChannelsController.removeUser').middleware('auth')
 }).prefix('channels')

@@ -11,7 +11,7 @@
           <q-avatar>
             <img src="https://cdn.quasar.dev/img/avatar5.jpg" />
           </q-avatar>
-          Jane
+          {{ loggedInUserName }}
           <q-icon name="fiber_manual_record" color="green"></q-icon>
           <q-btn-dropdown flat color="primary" label="Status">
             <q-list>
@@ -68,7 +68,7 @@
               <q-avatar>
                 <img src="https://cdn.quasar.dev/img/avatar5.jpg" />
               </q-avatar>
-              Jane
+              {{ loggedInUserName }}
               <q-icon name="fiber_manual_record" color="green"></q-icon>
               <q-btn-dropdown
                 flat
@@ -254,6 +254,9 @@ export default defineComponent({
       channels: 'joinedChannels',
       lastMessageOf: 'lastMessageOf'
     }),
+    ...mapGetters('auth', {
+      loggedInUserName: 'getUserName',
+    }),
     activeChannel () {
       //console.log('Active channel is: ' + this.$store.state.channels.active)
       return this.$store.state.channels.active
@@ -283,7 +286,6 @@ export default defineComponent({
       newMessageText: '',
       loading: false,
 
-      loggedInUserName: 'Jane',
       model: ref(null),
       openedChannel: {
         index: 0,
@@ -316,18 +318,33 @@ export default defineComponent({
 
     async send () {
       //this.setActiveChannel('general')
-      console.log(this.activeChannel)
+      //console.log(this.activeChannel)
 
-      this.loading = true
-      await this.addMessage({ channel: this.activeChannel, message: this.newMessageText })
-      this.newMessageText = ''
-      this.loading = false
+      let isCommand = false
+      if(this.newMessageText[0] === '/')
+        isCommand = true
+
+      if(isCommand){
+        console.log('Command found: ' + this.newMessageText)
+        console.log("While channel active is: " + this.activeChannel)
+        if(this.newMessageText == '/cancel' && this.activeChannel != null)
+          this.leaveChannel(this.activeChannel)
+      }
+
+      if(this.activeChannel != null && !isCommand){
+        this.loading = true
+        await this.addMessage({ channel: this.activeChannel, message: this.newMessageText })
+        this.newMessageText = ''
+        this.loading = false
+      }else{
+        this.newMessageText = ''
+      }
     },
     ...mapMutations('channels', {
       setActiveChannel: 'SET_ACTIVE'
     }),
     ...mapActions('auth', ['logout']),
-    ...mapActions('channels', ['addMessage']),
+    ...mapActions('channels', ['addMessage','leaveChannel']),
     isMine (message: SerializedMessage): boolean {
       return message.author.id === this.currentUser
     },

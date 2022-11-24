@@ -12,7 +12,7 @@
           />
 
           <q-btn round flat>
-            <q-avatar color="primary" text-color="white">G</q-avatar>
+            <q-avatar color="primary" text-color="white"></q-avatar>
           </q-btn>
 
           <span class="q-subtitle-1 q-pl-md">

@@ -1,6 +1,6 @@
 export interface Channel{
-    name: String,
-    index: Number,
-    color: String,
+    name: string,
+    index: number,
+    color: string,
     isPublic: boolean
 }
