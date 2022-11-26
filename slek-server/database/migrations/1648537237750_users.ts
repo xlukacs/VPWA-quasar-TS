@@ -10,6 +10,7 @@ export default class UsersSchema extends BaseSchema {
       table.string('password', 180).notNullable()
       table.string('remember_me_token').nullable()
       table.string('username').unique()
+      table.string('pic_name').defaultTo('https://cdn.quasar.dev/img/avatar5.jpg')
 
       /**
        * Uses timestampz for PostgreSQL and DATETIME2 for MSSQL

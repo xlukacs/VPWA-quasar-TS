@@ -81,7 +81,7 @@ const actions: ActionTree<ChannelsStateInterface, StateInterface> = {
     
     this.dispatch('channels/removeChannel', channel);
 
-    console.log(state.messages)
+    //console.log(state.messages)
     
     await channelService.in(channel)?.removeChannel(channel)
     
@@ -104,9 +104,9 @@ const actions: ActionTree<ChannelsStateInterface, StateInterface> = {
     
     channelService.leave(channel)
 
-    console.log(state.active)
+    //console.log(state.active)
     commit('SET_ACTIVE', 'general')
-    console.log(state.active)
+    //console.log(state.active)
 
     return response.data
   },
@@ -122,18 +122,19 @@ const actions: ActionTree<ChannelsStateInterface, StateInterface> = {
     const payload = { channel: channel, user: user?.username }
 
     const users = await api.get('channels/users_in_chat', { params: payload });
+    // console.log(users.data)
 
     const parsedUsers:User[] = []
-    users.data.forEach((user: { id: number; email: string; createdAt: string; updatedAt: string; username: string }) => {
-      parsedUsers.push({ id: user.id, email: user.email, createdAt: user.createdAt, updatedAt: user.updatedAt, username: user.username })
+    users.data.forEach((user: { id: number; email: string; createdAt: string; updatedAt: string; username: string, picName: string, status: string }) => {
+      parsedUsers.push({ id: user.id, email: user.email, createdAt: user.createdAt, updatedAt: user.updatedAt, username: user.username, picName: user.picName, status: user.status })
     });
     
-    console.log(parsedUsers)
-    console.log(channel)
+    // console.log(parsedUsers)
+    //console.log(channel)
 
     commit('SET_USERS', { parsed: parsedUsers as User[], channel } )
     //commit('CHANNEL_ADDED', { channel, messages: [] as unknown as SerializedMessage, members: {} as User[] })
-    console.log(state.usersInChat[channel])
+    //console.log(state.usersInChat[channel])
 
     commit('SET_ACTIVE', channel)
   }

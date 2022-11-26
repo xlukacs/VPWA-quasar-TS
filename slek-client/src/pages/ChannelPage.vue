@@ -9,7 +9,7 @@
       <q-toolbar v-if="!showTopHamburger">
         <q-toolbar-title class="col-md-3">
           <q-avatar>
-            <img src="https://cdn.quasar.dev/img/avatar5.jpg" />
+            <img :src="userPic" />
           </q-avatar>
           {{ loggedInUserName }}
           <q-icon name="fiber_manual_record" color="green"></q-icon>
@@ -250,7 +250,7 @@
           <q-item clickable v-ripple v-for="user in usersInChat">
             <q-item-section avatar>
               <q-avatar>
-                <img src="https://cdn.quasar.dev/img/boy-avatar.png" />
+                <img :src="user.picName" />
               </q-avatar>
             </q-item-section>
             <q-item-section>
@@ -300,6 +300,7 @@ export default defineComponent({
     }),
     ...mapGetters('auth', {
       loggedInUserName: 'getUserName',
+      userPic: 'getUserPic'
     }),
     activeChannel () {
       //console.log('Active channel is: ' + this.$store.state.channels.active)

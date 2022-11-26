@@ -43,8 +43,8 @@ const mutation: MutationTree<ChannelsStateInterface> = {
     state.channels.splice(state.channels.indexOf(channel), 1);
   },
   SET_USERS ( state, { parsed, channel } :  { parsed: User[], channel: string }){
-    console.log(parsed)
-    console.log(channel)
+    //console.log(parsed)
+    //console.log(channel)
     state.usersInChat[channel] = parsed
   }
 }

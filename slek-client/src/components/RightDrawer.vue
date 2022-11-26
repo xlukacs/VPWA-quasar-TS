@@ -35,7 +35,7 @@
     <q-item clickable v-ripple v-for="user in usersInChat">
       <q-item-section avatar>
         <q-avatar>
-          <img src="https://cdn.quasar.dev/img/boy-avatar.png" />
+          <img :src="user.picName" />
         </q-avatar>
       </q-item-section>
       <q-item-section>
@@ -265,11 +265,11 @@ export default defineComponent({
       if(oldVal != null && oldVal != undefined && oldVal != '')
         this.hideTopNavigator = false
 
-      console.log('NOw it is: ', this.hideTopNavigator)
+        //console.log('NOw it is: ', this.hideTopNavigator)
     },
     channelOwner(newVal, oldVal){
-      console.log(newVal + '-' + oldVal)
-      console.log(this.usersInChat)
+      //console.log(newVal + '-' + oldVal)
+      //console.log(this.usersInChat)
     }
   },
   mounted(){

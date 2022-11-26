@@ -23,4 +23,6 @@ export interface User {
   createdAt: string
   updatedAt: string
   username: string
+  picName: string
+  status: string
 }

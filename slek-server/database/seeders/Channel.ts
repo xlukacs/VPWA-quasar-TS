@@ -8,7 +8,7 @@ export default class ChannelSeeder extends BaseSeeder {
     await Channel.updateOrCreateMany(uniqueKey, [
       {
         name: 'general',
-        color: '#2d49e3',
+        color: 'orange',
         isPublic: true,
         creator_id: 0
       },

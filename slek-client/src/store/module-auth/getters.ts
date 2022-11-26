@@ -9,6 +9,9 @@ const getters: GetterTree<AuthStateInterface, StateInterface> = {
   getUserName(context){
     return context.user?.username;
   },
+  getUserPic(context){
+    return context.user?.picName;
+  }
 }
 
 export default getters
