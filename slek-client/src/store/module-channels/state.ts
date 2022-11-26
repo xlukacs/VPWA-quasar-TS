@@ -4,7 +4,7 @@ export interface ChannelsStateInterface {
   loading: boolean,
   error: Error | null,
   messages: { [channel: string]: SerializedMessage[] },
-  usersInChat: { [userName: string]: User[] }
+  usersInChat: { [channel: string]: User[] }
   active: string | null,
   channels: Channel[]
   activeChannel: Channel | null | undefined

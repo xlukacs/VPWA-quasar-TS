@@ -232,6 +232,49 @@
       </div>
     </q-page-container>
   </q-layout>
+
+  <!-- Dialogs -->
+  <q-dialog v-model="showUsersInChatDialog" persistent>
+    <q-card>
+      <q-bar>
+          <q-icon :name="getChannelStatus"></q-icon>
+          <div>{{ activeChannel }}</div>
+          <q-space></q-space>
+
+          <q-btn dense flat icon="close" v-close-popup>
+            <q-tooltip class="bg-white text-primary">Close</q-tooltip>
+          </q-btn>
+        </q-bar>
+      <q-card-section class="row items-center">
+        <q-list dense>
+          <q-item clickable v-ripple v-for="user in usersInChat">
+            <q-item-section avatar>
+              <q-avatar>
+                <img src="https://cdn.quasar.dev/img/boy-avatar.png" />
+              </q-avatar>
+            </q-item-section>
+            <q-item-section>
+              <div class="row">
+                <div class="col-10">
+                  <div
+                    class="row no-wrap justify-start items-center"
+                    style="height: 100%"
+                  >
+                    <span text-color="primary">{{ user.username }}</span>
+                    <q-icon name="star" color="blue" v-if="user.id == channelOwner"></q-icon>
+                  </div>
+                </div>
+              </div>
+            </q-item-section>
+          </q-item>
+        </q-list>
+      </q-card-section>
+      <!-- <q-card-actions align="right">
+        <q-btn flat label="Cancel" color="primary" v-close-popup />
+        <q-btn flat label="Turn on Wifi" color="primary" v-close-popup />
+      </q-card-actions> -->
+    </q-card>
+  </q-dialog>
 </template>
 
 <script lang="ts">
@@ -252,7 +295,8 @@ export default defineComponent({
     },
     ...mapGetters('channels', {
       channels: 'joinedChannels',
-      lastMessageOf: 'lastMessageOf'
+      lastMessageOf: 'lastMessageOf',
+      usersInChat: 'getUsersInActiveChat'
     }),
     ...mapGetters('auth', {
       loggedInUserName: 'getUserName',
@@ -266,6 +310,9 @@ export default defineComponent({
     },
     getCurrentUser () {
       return this.$store.state.auth.user
+    },
+    getChannelStatus(){
+      return this.$store.state.channels.activeChannel?.isPublic ? 'group' : 'lock';
     }
   },
   watch: {
@@ -291,7 +338,9 @@ export default defineComponent({
         index: 0,
         name: 'Channel X'
       },
-      typingCount: 2
+      typingCount: 2,
+
+      showUsersInChatDialog: false
     }
   },
   methods: {
@@ -346,6 +395,8 @@ export default defineComponent({
         console.log("While channel active is: " + this.activeChannel)
         if(this.newMessageText == '/cancel' && this.activeChannel != null)
           this.leaveChannel(this.activeChannel)
+        if(this.newMessageText == '/list' && this.activeChannel != null)
+          this.showUsersInChat()
       }
 
       if(this.activeChannel != null && !isCommand){
@@ -379,6 +430,9 @@ export default defineComponent({
       //   console.log('Looking for pic of user:' + message.author.id)
       const picture = 'https://cdn.quasar.dev/img/avatar5.jpg' // TODO change this from static
       return picture
+    },
+    showUsersInChat(){
+      this.showUsersInChatDialog = true
     }
   },
   setup () {

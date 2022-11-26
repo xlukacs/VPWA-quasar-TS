@@ -12,6 +12,12 @@ const getters: GetterTree<ChannelsStateInterface, StateInterface> = {
   getActiveChannelName (context){
     return context.active
   },
+  getActiveChannel(context){
+    return context.activeChannel || 'Not in an active channel...'
+  },
+  getUsersInActiveChat(context){
+    return context.active !== null ? context.usersInChat[context.active] : []
+  },
   getChannelCreator(context){
     return context.activeChannel?.owner;
   },

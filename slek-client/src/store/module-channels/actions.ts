@@ -89,11 +89,53 @@ const actions: ActionTree<ChannelsStateInterface, StateInterface> = {
 
     return response.data
   },
+
+  async closeChannel({ commit, rootState, state }, channel: string ) {
+    const user = rootState.auth.user
+
+    const payload = { channel: channel, user: user?.username }
+
+    const response = await api.delete<Channel>('channels/channel', { data: payload })
+    
+    this.dispatch('channels/removeChannel', channel);
+
+    //TODO remove channel for everyone else
+    await channelService.in(channel)?.removeChannel(channel)
+    
+    channelService.leave(channel)
+
+    console.log(state.active)
+    commit('SET_ACTIVE', 'general')
+    console.log(state.active)
+
+    return response.data
+  },
     
   async removeChannel ({ commit }, channel: string) {
     commit('CLEAR_CHANNEL', channel)
     
     commit('REMOVE_CHANNEL', channel)
+  },
+
+  async setActiveChannel({commit, rootState, state}, channel: string) {
+    const user = rootState.auth.user
+    const payload = { channel: channel, user: user?.username }
+
+    const users = await api.get('channels/users_in_chat', { params: payload });
+
+    const parsedUsers:User[] = []
+    users.data.forEach((user: { id: number; email: string; createdAt: string; updatedAt: string; username: string }) => {
+      parsedUsers.push({ id: user.id, email: user.email, createdAt: user.createdAt, updatedAt: user.updatedAt, username: user.username })
+    });
+    
+    console.log(parsedUsers)
+    console.log(channel)
+
+    commit('SET_USERS', { parsed: parsedUsers as User[], channel } )
+    //commit('CHANNEL_ADDED', { channel, messages: [] as unknown as SerializedMessage, members: {} as User[] })
+    console.log(state.usersInChat[channel])
+
+    commit('SET_ACTIVE', channel)
   }
 }
 

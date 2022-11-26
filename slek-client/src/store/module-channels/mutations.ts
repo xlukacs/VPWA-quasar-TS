@@ -17,6 +17,7 @@ const mutation: MutationTree<ChannelsStateInterface> = {
   },
   CLEAR_CHANNEL (state, channel) {
     state.active = null
+    state.usersInChat[channel] = []
     delete state.messages[channel]
   },
   SET_ACTIVE (state, channel: string) {
@@ -40,6 +41,11 @@ const mutation: MutationTree<ChannelsStateInterface> = {
   },
   REMOVE_CHANNEL ( state, { channel } :  {channel: Channel}){
     state.channels.splice(state.channels.indexOf(channel), 1);
+  },
+  SET_USERS ( state, { parsed, channel } :  { parsed: User[], channel: string }){
+    console.log(parsed)
+    console.log(channel)
+    state.usersInChat[channel] = parsed
   }
 }
 

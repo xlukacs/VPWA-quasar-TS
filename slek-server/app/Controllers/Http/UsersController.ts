@@ -9,7 +9,7 @@ export default class UsersController {
         const channels_prefetched = await User.query().where('id', '=', auth.user.id).preload('channels');
 
         const publicChannels = await Channel.query().where('is_public', '=', 'true')
-        console.log(publicChannels)
+        //console.log(publicChannels)
 
         var channels = []
         channels_prefetched[0].$preloaded.channels.forEach((channel) => {
@@ -33,7 +33,7 @@ export default class UsersController {
                 channels.push({ name: channel.name, index: channel.id, color: channel.color, isPublic: channel.isPublic, owner: channel.creator_id })
         })
 
-        console.log(channels)
+        //console.log(channels)
 
         return channels
     }

@@ -155,10 +155,10 @@ export default defineComponent({
     }),
   },
   methods: {
-    ...mapMutations('channels', {
-      setActiveChannel: 'SET_ACTIVE'
-    }),
-    ...mapActions('channels', ['populateChannelList', 'addChannel']),
+    // ...mapMutations('channels', {
+    //   setActiveChannel: 'SET_ACTIVE'
+    // }),
+    ...mapActions('channels', ['populateChannelList', 'addChannel', 'setActiveChannel']),
     async createChannelMethod(){
       this.loading = true
 
