@@ -10,7 +10,7 @@ const getters: GetterTree<ChannelsStateInterface, StateInterface> = {
     return context.active !== null ? context.messages[context.active] : []
   },
   getActiveChannelName (context){
-    return context.active
+    return context.active || 'default'
   },
   getActiveChannel(context){
     return context.activeChannel || 'Not in an active channel...'
@@ -20,6 +20,9 @@ const getters: GetterTree<ChannelsStateInterface, StateInterface> = {
   },
   getChannelCreator(context){
     return context.activeChannel?.owner;
+  },
+  getChannelVisibility(context){
+    return context.activeChannel?.isPublic
   },
   lastMessageOf (context) {
     return (channel: string) => {

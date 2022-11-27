@@ -35,6 +35,8 @@ const actions: ActionTree<ChannelsStateInterface, StateInterface> = {
   },
 
   async populateChannelList ({  state, rootState, commit }) {
+    commit('CLEAR_CHANNELS')
+    console.log(state.channels)
     // first load of the channels and data from DB on mount of the page
     const channelsData = (await api.get('user/getChannels')).data
 
@@ -49,7 +51,7 @@ const actions: ActionTree<ChannelsStateInterface, StateInterface> = {
         })
 
         if(!found){
-          let tempChannel:Channel = { name: element.name, index: element.index, color: element.color, isPublic: element.isPublic, owner: element.owner}
+          let tempChannel:Channel = { name: element.name, index: element.index, color: element.color, isPublic: element.isPublic, owner: element.owner, valid: element.valid }
 
           commit('ADD_CHANNEL', tempChannel)
 
@@ -59,9 +61,14 @@ const actions: ActionTree<ChannelsStateInterface, StateInterface> = {
     }
   },
 
-  async addChannel({ commit }, data: Channel ) {
+  async addChannel({ commit, rootState }, data: Channel ) {
     const response  = await api.post<Channel>('channels/createChannel', data)
-    const channel = response.data
+    let channel = response.data
+
+    const user = rootState.auth.user
+    const payload = { channel: channel.name, user: user?.username }
+    await api.get('channels/acceptInvitation', { params: payload })
+    channel.valid = true
 
     this.dispatch('channels/join', channel.name)
     commit('ADD_CHANNEL', channel)
@@ -73,7 +80,7 @@ const actions: ActionTree<ChannelsStateInterface, StateInterface> = {
 
   async leaveChannel({ commit, rootState, state }, channel: string ) {
     const user = rootState.auth.user
-    console.log(user)
+    // console.log(user)
 
     const payload = { channel: channel, user: user?.username }
 
@@ -141,6 +148,7 @@ const actions: ActionTree<ChannelsStateInterface, StateInterface> = {
 
   async inviteUser({ commit }, { channel, user } : { channel: string, user: string }){
     const payload = { user: user, channel: channel }
+    console.log(payload)
     const invitation = await api.get('channels/createInvitation', { params: payload })
 
     console.log(invitation)

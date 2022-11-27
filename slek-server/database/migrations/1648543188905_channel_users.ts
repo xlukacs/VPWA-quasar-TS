@@ -25,8 +25,9 @@ export default class ChannelUsers extends BaseSchema {
       /**
        * Uses timestamptz for PostgreSQL and DATETIME2 for MSSQL
        */
-      table.timestamp('created_at', { useTz: true })
-      table.timestamp('updated_at', { useTz: true })
+      table.timestamps(true, true) //TODO remove if values will be missing from db
+      // table.timestamp('created_at', { useTz: true })
+      // table.timestamp('updated_at', { useTz: true })
     })
   }
 

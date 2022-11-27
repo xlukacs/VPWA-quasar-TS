@@ -67,17 +67,54 @@ export default class ChannelsController {
         //   .where('invite_pending', false)
 
         const users = await User.all()
-        console.log(users)
+        //console.log(users)
 
         return users
     }
 
-    async createInvitataion({ request }: HttpContextContract){
+    async createInvitation({ request }: HttpContextContract){
         const validate = await request.validate(RemoveUserValidator)
 
         const user = await User.findByOrFail('username', validate.user)
         const channel = await Channel.findByOrFail('name', validate.channel)
 
-        await Database.table('channel_users').insert({ user_id: user.id, channel_id: channel.id })
+        console.log(user.$attributes)
+        console.log(channel.$attributes)
+
+    
+        await Database.table('channel_users').insert({ 
+            user_id: user.id, 
+            channel_id: channel.id
+        })
+    }
+
+    async getValidStatus({ request }: HttpContextContract){
+        const validate = await request.validate(RemoveUserValidator)
+
+        const user = await User.findByOrFail('username', validate.user)
+        const channel = await Channel.findByOrFail('name', validate.channel)
+
+        return await Database.from('channel_users').where('channel_id', channel.id).where('user_id', user.id).select('valid')
+    }
+
+    async acceptInvite({ request }: HttpContextContract){
+        const validate = await request.validate(RemoveUserValidator)
+
+        const user = await User.findByOrFail('username', validate.user)
+        const channel = await Channel.findByOrFail('name', validate.channel)
+
+        await Database.from('channel_users').where('channel_id', channel.id).where('user_id', user.id).update('valid', true)
+    }
+
+    async denyInvite({ request }: HttpContextContract){
+        const validate = await request.validate(RemoveUserValidator)
+
+        const user = await User.findByOrFail('username', validate.user)
+        const channel = await Channel.findByOrFail('name', validate.channel)
+
+        await Database  .from('channel_users')
+                        .where('channel_id', channel.id)
+                        .where('user_id', user.id)
+                        .delete()
     }
 }

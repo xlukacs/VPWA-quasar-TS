@@ -20,6 +20,12 @@ export default class User extends BaseModel {
   public username: string
 
   @column()
+  public firstname: string
+
+  @column()
+  public surname: string
+
+  @column()
   public email: string
 
   @column({ serializeAs: null })
@@ -46,6 +52,7 @@ export default class User extends BaseModel {
     pivotTable: 'channel_users',
     pivotForeignKey: 'user_id',
     pivotRelatedForeignKey: 'channel_id',
+    pivotColumns: ['valid'],
     pivotTimestamps: true,
   })
   public channels: ManyToMany<typeof Channel>

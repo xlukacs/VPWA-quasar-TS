@@ -7,6 +7,22 @@
       <q-input
         rounded
         standout
+        type="text"
+        v-model="form.surname"
+        label="Surname"
+        class="q-mt-md"
+      ></q-input>
+      <q-input
+        rounded
+        standout
+        type="text"
+        v-model="form.firstname"
+        label="Firstname"
+        class="q-mt-md"
+      ></q-input>
+      <q-input
+        rounded
+        standout
         v-model.trim="form.email"
         type="email"
         label="Email"
@@ -60,7 +76,7 @@ export default defineComponent({
   name: 'RegisterPage',
   data () {
     return {
-      form: { email: '', password: '', passwordConfirmation: '', username: '' },
+      form: { email: '', password: '', passwordConfirmation: '', username: '', firstname: '', surname: '' },
       showPassword: false
     }
   },

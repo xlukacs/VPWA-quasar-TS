@@ -18,6 +18,9 @@ export default class Channel extends BaseModel {
   @column()
   public isPublic: Boolean
 
+  //@column()
+  //public valid: boolean
+
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime
 

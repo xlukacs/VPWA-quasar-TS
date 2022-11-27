@@ -17,7 +17,11 @@
         ></q-avatar>
       </q-item-section>
       <q-item-section>{{ channel.name }}</q-item-section>
-      <q-item-section>{{ lastMessageOf(channel.name)?.content || 'Placeholder text...' }}</q-item-section>
+      <q-item-section v-if="channel.valid">{{ lastMessageOf(channel.name)?.content || 'Placeholder text...' }}</q-item-section>
+      <q-item-section v-if="!channel.valid">
+        <q-btn color="primary" dense icon="check" label="Accept" @click="acceptInvitation(channel.name)" />
+        <q-btn color="negative" dense icon="close" class="q-mt-xs" label="Deny" @click="denyInvitation(channel.name)" />
+      </q-item-section>
     </q-item>
 
     <!-- Channel editor dialog -->
@@ -120,6 +124,7 @@
 </template>
 
 <script lang="ts">
+import { api } from 'src/boot/axios'
 import { ref, defineComponent } from 'vue'
 import { mapMutations, mapGetters, mapActions } from 'vuex'
 
@@ -158,6 +163,19 @@ export default defineComponent({
     // ...mapMutations('channels', {
     //   setActiveChannel: 'SET_ACTIVE'
     // }),
+    async acceptInvitation(channelName: string){
+      console.log(channelName)
+      const payload = { channel: channelName, user: this.$store.state.auth.user?.username }
+
+      await api.get('channels/acceptInvitation', { params: payload }).then(() => this.populateChannelList()).then(() => this.setActiveChannel(channelName))
+    },
+    async denyInvitation(channelName: string){
+      console.log(channelName)
+      const payload = { channel: channelName, user: this.$store.state.auth.user?.username }
+
+      await api.get('channels/denyInvitation', { params: payload }).then(() => this.populateChannelList()).then(() => this.setActiveChannel('general'))
+      
+    },
     ...mapActions('channels', ['populateChannelList', 'addChannel', 'setActiveChannel']),
     async createChannelMethod(){
       this.loading = true
@@ -174,7 +192,7 @@ export default defineComponent({
       if(this.newChannelColor == 'Blue')
         newChannelThemeColor = "primary";
 
-      let channel = { name: this.newChannelName, color: newChannelThemeColor, isPublic: canBePublic, owner: this.$store.state.auth.user?.id}
+      let channel = { name: this.newChannelName, color: newChannelThemeColor, isPublic: canBePublic, owner: this.$store.state.auth.user?.id, valid: true }
       this.addChannel(channel)
       this.loading = false
 

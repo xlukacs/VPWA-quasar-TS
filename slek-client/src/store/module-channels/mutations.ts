@@ -46,6 +46,9 @@ const mutation: MutationTree<ChannelsStateInterface> = {
     //console.log(parsed)
     //console.log(channel)
     state.usersInChat[channel] = parsed
+  },
+  CLEAR_CHANNELS(state){
+    state.channels = []
   }
 }
 

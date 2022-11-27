@@ -3,5 +3,6 @@ export interface Channel{
     index: number,
     color: string,
     isPublic: boolean,
-    owner: number
+    owner: number,
+    valid: boolean
 }

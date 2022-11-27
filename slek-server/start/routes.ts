@@ -41,4 +41,8 @@ Route.group(() => {
   Route.delete('channel', 'ChannelsController.removeChannel').middleware('auth')
   Route.get('users_in_chat', 'ChannelsController.usersInChat').middleware('auth')
   Route.get('createInvitation', 'ChannelsController.createInvitation').middleware('auth')
+
+  Route.get('acceptInvitation', 'ChannelsController.acceptInvite').middleware('auth')
+  Route.get('denyInvitation', 'ChannelsController.denyInvite').middleware('auth')
+  Route.get('getValidStatus', 'ChannelsController.getValidStatus').middleware('auth')
 }).prefix('channels')

@@ -3,6 +3,7 @@ import { StateInterface } from '../index'
 import { AuthStateInterface } from './state'
 import { authService, authManager } from 'src/services'
 import { LoginCredentials, RegisterData } from 'src/contracts'
+import { api } from 'src/boot/axios'
 
 const actions: ActionTree<AuthStateInterface, StateInterface> = {
     async check ({ state, commit, dispatch }) {
@@ -10,9 +11,12 @@ const actions: ActionTree<AuthStateInterface, StateInterface> = {
       commit('AUTH_START')
       const user = await authService.me()
       // join user to general channel - hardcoded for now
-      // if (user?.id !== state.user?.id) {
-      //   await dispatch('channels/join', 'general', { root: true })
-      // }
+      if (user?.id !== state.user?.id) {
+        //await dispatch('channels/join', 'general', { root: true })
+        const payload = { channel: 'general', user: user?.username }
+        await api.get('channels/acceptInvitation', { params: payload })
+      }
+      
       commit('AUTH_SUCCESS', user)
       return user !== null
     } catch (err) {

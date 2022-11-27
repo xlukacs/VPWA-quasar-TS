@@ -174,6 +174,16 @@
     </q-drawer>
 
     <q-page-container style="height: 100vh">
+      <span v-if="!activeChannel" class="hologram">
+        This is the default lobby. To proceed please join a channel from the list. <br>
+        Forher available commands:
+        <ul>
+          <li>/list - show users in channel</li>
+          <li>/join [channel name] - join channel</li>
+          <li>/status [online | offline | dnd] - work in progress</li>
+        </ul>
+      </span>
+
       <div class="q-pa-sm column" style="height: 100%; overflow: hidden">
         <q-scroll-area ref="chatArea"
           class="justify-center"
@@ -296,7 +306,10 @@ export default defineComponent({
     ...mapGetters('channels', {
       channels: 'joinedChannels',
       lastMessageOf: 'lastMessageOf',
-      usersInChat: 'getUsersInActiveChat'
+      usersInChat: 'getUsersInActiveChat',
+      channelOwner: 'getChannelCreator',
+      activeChannel: 'getActiveChannelName',
+      privateChannel: 'getChannelVisibility'
     }),
     ...mapGetters('auth', {
       loggedInUserName: 'getUserName',
@@ -339,14 +352,15 @@ export default defineComponent({
         index: 0,
         name: 'Channel X'
       },
-      typingCount: 2,
+      typingCount: 0,
 
       showUsersInChatDialog: false
     }
   },
   methods: {
-    inviteUser(user: string){
-      console.log(user)
+    inviteUserToChannel(user: string){
+      this.inviteUser({channel: this.activeChannel, user: user})
+      console.log("inviting " + user + " to " + this.activeChannel)
     },
     isUserTagged (message:string) {
       // :class="isUserTagged(message.content) ? 'mentionedMessage' : ''"
@@ -402,8 +416,8 @@ export default defineComponent({
           this.leaveChannel(this.activeChannel)
         if(splitted[0] == '/list' && this.activeChannel != null)
           this.showUsersInChat()
-        if(splitted[0] == '/invite' && this.activeChannel != null){
-          this.inviteUser(splitted[1])
+        if(splitted[0] == '/invite' && this.activeChannel != null && !this.privateChannel){
+          this.inviteUserToChannel(splitted[1])
         }
       }
 
@@ -420,7 +434,7 @@ export default defineComponent({
       setActiveChannel: 'SET_ACTIVE'
     }),
     ...mapActions('auth', ['logout']),
-    ...mapActions('channels', ['addMessage','leaveChannel']),
+    ...mapActions('channels', ['addMessage','leaveChannel', 'inviteUser']),
     isMine (message: SerializedMessage): boolean {
       return message.author.id === this.currentUser
     },
@@ -453,5 +467,9 @@ export default defineComponent({
 <style scoped>
 .mentionedMessage{
   border: 2px solid red;
+}
+.hologram{
+  position: absolute;
+  z-index: 1001;
 }
 </style>
