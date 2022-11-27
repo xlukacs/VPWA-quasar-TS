@@ -21,6 +21,7 @@ export default class ChannelUsers extends BaseSchema {
         .inTable('channels')
         .onDelete('CASCADE')
       table.unique(['user_id', 'channel_id'])
+      table.boolean('valid').defaultTo(false)
       /**
        * Uses timestamptz for PostgreSQL and DATETIME2 for MSSQL
        */

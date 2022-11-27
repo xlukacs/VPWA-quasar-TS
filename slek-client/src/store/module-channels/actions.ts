@@ -37,7 +37,7 @@ const actions: ActionTree<ChannelsStateInterface, StateInterface> = {
   async populateChannelList ({  state, rootState, commit }) {
     // first load of the channels and data from DB on mount of the page
     const channelsData = (await api.get('user/getChannels')).data
-    
+
     for (const channel in channelsData) {
       if (Object.prototype.hasOwnProperty.call(channelsData, channel)) {
         const element = channelsData[channel];
@@ -50,10 +50,10 @@ const actions: ActionTree<ChannelsStateInterface, StateInterface> = {
 
         if(!found){
           let tempChannel:Channel = { name: element.name, index: element.index, color: element.color, isPublic: element.isPublic, owner: element.owner}
-          
+
           commit('ADD_CHANNEL', tempChannel)
-          
-          this.dispatch('channels/join', tempChannel.name, { root: true })          
+
+          this.dispatch('channels/join', tempChannel.name, { root: true })
         }
       }
     }
@@ -78,13 +78,13 @@ const actions: ActionTree<ChannelsStateInterface, StateInterface> = {
     const payload = { channel: channel, user: user?.username }
 
     const response = await api.delete<Channel>('channels/channel_user', { data: payload })
-    
+
     this.dispatch('channels/removeChannel', channel);
 
     //console.log(state.messages)
-    
+
     await channelService.in(channel)?.removeChannel(channel)
-    
+
     channelService.leave(channel)
 
     return response.data
@@ -96,12 +96,12 @@ const actions: ActionTree<ChannelsStateInterface, StateInterface> = {
     const payload = { channel: channel, user: user?.username }
 
     const response = await api.delete<Channel>('channels/channel', { data: payload })
-    
+
     this.dispatch('channels/removeChannel', channel);
 
     //TODO remove channel for everyone else
     await channelService.in(channel)?.removeChannel(channel)
-    
+
     channelService.leave(channel)
 
     //console.log(state.active)
@@ -110,10 +110,10 @@ const actions: ActionTree<ChannelsStateInterface, StateInterface> = {
 
     return response.data
   },
-    
+
   async removeChannel ({ commit }, channel: string) {
     commit('CLEAR_CHANNEL', channel)
-    
+
     commit('REMOVE_CHANNEL', channel)
   },
 
@@ -128,7 +128,7 @@ const actions: ActionTree<ChannelsStateInterface, StateInterface> = {
     users.data.forEach((user: { id: number; email: string; createdAt: string; updatedAt: string; username: string, picName: string, status: string }) => {
       parsedUsers.push({ id: user.id, email: user.email, createdAt: user.createdAt, updatedAt: user.updatedAt, username: user.username, picName: user.picName, status: user.status })
     });
-    
+
     // console.log(parsedUsers)
     //console.log(channel)
 
@@ -137,6 +137,13 @@ const actions: ActionTree<ChannelsStateInterface, StateInterface> = {
     //console.log(state.usersInChat[channel])
 
     commit('SET_ACTIVE', channel)
+  },
+
+  async inviteUser({ commit }, { channel, user } : { channel: string, user: string }){
+    const payload = { user: user, channel: channel }
+    const invitation = await api.get('channels/createInvitation', { params: payload })
+
+    console.log(invitation)
   }
 }
 

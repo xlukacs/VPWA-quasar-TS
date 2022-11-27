@@ -27,7 +27,7 @@ export default class ChannelsController {
         await user.related('channels').detach([channel.id])
 
         if(user.id == channel.creator_id)
-            await channel.delete() 
+            await channel.delete()
     }
 
     async removeChannel({ request } : HttpContextContract) {
@@ -38,7 +38,7 @@ export default class ChannelsController {
 
         await user.related('channels').detach([channel.id])
 
-        await channel.delete() 
+        await channel.delete()
     }
 
     async usersInChat({ request }: HttpContextContract){
@@ -60,7 +60,7 @@ export default class ChannelsController {
         //console.log(users.client)
         //console.log("****************************************")
         //console.log(users)
-        
+
         //   .related('channels')
         //   .query()
         //   .pivotColumns(['channel_id'])
@@ -70,5 +70,14 @@ export default class ChannelsController {
         console.log(users)
 
         return users
+    }
+
+    async createInvitataion({ request }: HttpContextContract){
+        const validate = await request.validate(RemoveUserValidator)
+
+        const user = await User.findByOrFail('username', validate.user)
+        const channel = await Channel.findByOrFail('name', validate.channel)
+
+        await Database.table('channel_users').insert({ user_id: user.id, channel_id: channel.id })
     }
 }

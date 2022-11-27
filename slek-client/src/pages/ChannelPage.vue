@@ -345,20 +345,23 @@ export default defineComponent({
     }
   },
   methods: {
+    inviteUser(user: string){
+      console.log(user)
+    },
     isUserTagged (message:string) {
       // :class="isUserTagged(message.content) ? 'mentionedMessage' : ''"
       const words = message.split(' ')
       const ownMentionTag = '#' + this.$store.state.auth.user?.username
-      
+
       let found = false
       words.forEach(word => {
         // console.log(word + '/' + ownMentionTag)
         if (word == ownMentionTag && !found){
           // console.log(message + '/' + ownMentionTag + ' FOUND')
           found = true
-        } 
+        }
       })
-      
+
       // console.log(message + '/' + ownMentionTag + ' FALSE')
       return found
     },
@@ -394,10 +397,14 @@ export default defineComponent({
       if(isCommand){
         console.log('Command found: ' + this.newMessageText)
         console.log("While channel active is: " + this.activeChannel)
-        if(this.newMessageText == '/cancel' && this.activeChannel != null)
+        const splitted = this.newMessageText.split(' ')
+        if(splitted[0] == '/cancel' && this.activeChannel != null)
           this.leaveChannel(this.activeChannel)
-        if(this.newMessageText == '/list' && this.activeChannel != null)
+        if(splitted[0] == '/list' && this.activeChannel != null)
           this.showUsersInChat()
+        if(splitted[0] == '/invite' && this.activeChannel != null){
+          this.inviteUser(splitted[1])
+        }
       }
 
       if(this.activeChannel != null && !isCommand){
