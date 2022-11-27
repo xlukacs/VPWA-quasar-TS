@@ -4,14 +4,16 @@
     "./commands",
     "@adonisjs/core/build/commands/index.js",
     "@adonisjs/repl/build/commands",
-    "@adonisjs/lucid/build/commands"
+    "@adonisjs/lucid/build/commands",
+    "Adonis/Commands/Scheduler:Run"
   ],
   "exceptionHandlerNamespace": "App/Exceptions/Handler",
   "aliases": {
     "App": "app",
     "Config": "config",
     "Database": "database",
-    "Contracts": "contracts"
+    "Contracts": "contracts",
+    "Scheduler": "Adonis/Addons/Scheduler"
   },
   "preloads": [
     "./start/routes",
@@ -39,9 +41,11 @@
     "@adonisjs/core",
     "@adonisjs/lucid",
     "@adonisjs/auth",
-    "@ruby184/adonis-socket.io"
+    "@ruby184/adonis-socket.io",
+    "adonis-scheduler/providers/SchedulerProvider"
   ],
   "aceProviders": [
-    "@adonisjs/repl"
+    "@adonisjs/repl",
+    "adonis-scheduler/providers/CommandsProvider"
   ]
 }

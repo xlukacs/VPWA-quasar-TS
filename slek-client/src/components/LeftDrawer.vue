@@ -196,6 +196,10 @@ export default defineComponent({
       this.addChannel(channel)
       this.loading = false
 
+      this.newChannelName = ''
+      this.newChannelColor = null
+      this.newChannelVisibility = null
+
       this.createChannel = false
     },
     testFunc () {
