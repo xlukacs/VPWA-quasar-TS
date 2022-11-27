@@ -97,6 +97,14 @@ export default class ChannelsController {
         return await Database.from('channel_users').where('channel_id', channel.id).where('user_id', user.id).select('valid')
     }
 
+    async getChannelVisibility({ request }: HttpContextContract){
+        const validate = await request.validate(RemoveUserValidator)
+
+        const channel = await Channel.findByOrFail('name', validate.channel)
+
+        return channel.isPublic
+    }
+
     async acceptInvite({ request }: HttpContextContract){
         const validate = await request.validate(RemoveUserValidator)
 

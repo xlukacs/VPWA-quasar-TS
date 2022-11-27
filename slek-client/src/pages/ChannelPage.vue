@@ -12,10 +12,10 @@
             <img :src="userPic" />
           </q-avatar>
           {{ loggedInUserName }}
-          <q-icon name="fiber_manual_record" color="green"></q-icon>
+          <q-icon name="fiber_manual_record" :color="userStatusColor"></q-icon>
           <q-btn-dropdown flat color="primary" label="Status">
             <q-list>
-              <q-item clickable v-close-popup>
+              <q-item clickable v-close-popup  @click="setStatus('online')">
                 <q-item-section>
                   <q-item-label>Online</q-item-label>
                 </q-item-section>
@@ -23,7 +23,7 @@
                   <q-icon name="fiber_manual_record" color="green"></q-icon>
                 </q-item-section>
               </q-item>
-              <q-item clickable v-close-popup>
+              <q-item clickable v-close-popup  @click="setStatus('dnd')">
                 <q-item-section>
                   <q-item-label>DND</q-item-label>
                 </q-item-section>
@@ -31,7 +31,7 @@
                   <q-icon name="fiber_manual_record" color="yellow"></q-icon>
                 </q-item-section>
               </q-item>
-              <q-item clickable v-close-popup>
+              <q-item clickable v-close-popup  @click="setStatus('offline')">
                 <q-item-section>
                   <q-item-label>Offline</q-item-label>
                 </q-item-section>
@@ -42,20 +42,6 @@
             </q-list>
           </q-btn-dropdown>
         </q-toolbar-title>
-
-        <!-- :dense="dense" -->
-        <!-- <q-input
-          borderless
-          bottom-slots
-          v-model="channelSearchQuery"
-          label="Search channels..."
-          maxlength="12"
-          class="col-md-6 q-pa-none"
-        >
-          <template v-slot:append>
-            <q-icon name="search"></q-icon>
-          </template>
-        </q-input> -->
 
         <div class="col-md-9 row items-center justify-end">
           <q-btn to="/login" label="Log out" class="bg-negative"></q-btn>
@@ -77,7 +63,7 @@
                 style="float: right"
               >
                 <q-list>
-                  <q-item clickable v-close-popup>
+                  <q-item clickable v-close-popup @click="setStatus('online')">
                     <q-item-section>
                       <q-item-label>Online</q-item-label>
                     </q-item-section>
@@ -85,7 +71,7 @@
                       <q-icon name="fiber_manual_record" color="green"></q-icon>
                     </q-item-section>
                   </q-item>
-                  <q-item clickable v-close-popup>
+                  <q-item clickable v-close-popup @click="setStatus('dnd')">
                     <q-item-section>
                       <q-item-label>DND</q-item-label>
                     </q-item-section>
@@ -96,7 +82,7 @@
                       ></q-icon>
                     </q-item-section>
                   </q-item>
-                  <q-item clickable v-close-popup>
+                  <q-item clickable v-close-popup @click="setStatus('offline')">
                     <q-item-section>
                       <q-item-label>Offline</q-item-label>
                     </q-item-section>
@@ -110,20 +96,6 @@
           </div>
 
           <div class="row">
-            <!-- :dense="dense" -->
-            <!-- <q-input
-              borderless
-              bottom-slots
-              v-model="channelSearchQuery"
-              label="Search channels..."
-              maxlength="12"
-              class="col-8 q-pa-none"
-            >
-              <template v-slot:append>
-                <q-icon name="search"></q-icon>
-              </template>
-            </q-input> -->
-
             <div class="col-12 row items-center justify-end">
               <q-btn @click="logout" label="Log out" class="bg-negative"></q-btn>
             </div>
@@ -174,7 +146,7 @@
     </q-drawer>
 
     <q-page-container style="height: 100vh">
-      <span v-if="!activeChannel" class="hologram">
+      <span v-if="!activeChannel" class="hologram q-pa-md">
         This is the default lobby. To proceed please join a channel from the list. <br>
         Forher available commands:
         <ul>
@@ -285,6 +257,8 @@
       </q-card-actions> -->
     </q-card>
   </q-dialog>
+
+  <ErrorPrompt />
 </template>
 
 <script lang="ts">
@@ -293,11 +267,14 @@ import { defineComponent, ref } from 'vue'
 import LeftDrawer from 'src/components/LeftDrawer.vue'
 import RightDrawer from '../components/RightDrawer.vue'
 import { Dimension } from '../components/models'
-import { mapActions, mapGetters, mapMutations } from 'vuex'
+import { mapActions, mapGetters, mapMutations, useStore } from 'vuex'
 import { QScrollArea } from 'quasar'
+import { api } from 'src/boot/axios'
+import ErrorPrompt from 'src/components/ErrorPrompt.vue'
+import { stat } from 'fs'
 
 export default defineComponent({
-  components: { LeftDrawer, RightDrawer },
+  components: { LeftDrawer, RightDrawer, ErrorPrompt },
   name: 'ChannelPage',
   computed: {
     messages (): SerializedMessage[] {
@@ -315,8 +292,10 @@ export default defineComponent({
       loggedInUserName: 'getUserName',
       userPic: 'getUserPic'
     }),
+    ...mapGetters('user', {
+      userStatus: 'getStatus',
+    }),
     activeChannel () {
-      //console.log('Active channel is: ' + this.$store.state.channels.active)
       return this.$store.state.channels.active
     },
     currentUser () {
@@ -335,6 +314,14 @@ export default defineComponent({
         this.$nextTick(() => this.scrollMessages())
       },
       deep: true
+    },
+    userStatus(newVal, oldVal){
+      if(newVal == 'online')
+        this.userStatusColor = 'green'
+      else if(newVal == 'offline')
+        this.userStatusColor = 'red'
+      else if(newVal == 'dnd')
+        this.userStatusColor = 'yellow'
     }
   },
   data () {
@@ -354,29 +341,43 @@ export default defineComponent({
       },
       typingCount: 0,
 
-      showUsersInChatDialog: false
+      showUsersInChatDialog: false,
+      userStatusColor: 'green'
     }
   },
   methods: {
+    selectStatus(status: string){
+      this.setStatus(status)
+    },
+    async tryJoin(channel: string){
+      const user = this.$store.state.auth.user
+      const payload = {
+        channel: channel,
+        user: user?.username
+      }
+      const isPublic = await api.get('channels/getChannelVisibility', { params: payload })
+      
+      if(isPublic.data || this.channelOwner == user?.id){
+        this.setActiveChannel(channel)
+      }else{
+        this.setError('Cant join a private channel without invitation!')
+      }
+    },
     inviteUserToChannel(user: string){
       this.inviteUser({channel: this.activeChannel, user: user})
-      console.log("inviting " + user + " to " + this.activeChannel)
+      this.setError('User ' + user + ' has been invited to channel: ' + this.activeChannel)
     },
     isUserTagged (message:string) {
-      // :class="isUserTagged(message.content) ? 'mentionedMessage' : ''"
       const words = message.split(' ')
       const ownMentionTag = '#' + this.$store.state.auth.user?.username
 
       let found = false
       words.forEach(word => {
-        // console.log(word + '/' + ownMentionTag)
         if (word == ownMentionTag && !found){
-          // console.log(message + '/' + ownMentionTag + ' FOUND')
           found = true
         }
       })
 
-      // console.log(message + '/' + ownMentionTag + ' FALSE')
       return found
     },
     getMessageAreaHeight: (
@@ -412,13 +413,25 @@ export default defineComponent({
         console.log('Command found: ' + this.newMessageText)
         console.log("While channel active is: " + this.activeChannel)
         const splitted = this.newMessageText.split(' ')
-        if(splitted[0] == '/cancel' && this.activeChannel != null)
+        if(splitted[0] == '/cancel' && this.activeChannel != null){
           this.leaveChannel(this.activeChannel)
-        if(splitted[0] == '/list' && this.activeChannel != null)
+          this.setError('First join a channel, to be able to leave one.')
+        }
+        else if(splitted[0] == '/list' && this.activeChannel != null){
           this.showUsersInChat()
-        if(splitted[0] == '/invite' && this.activeChannel != null && !this.privateChannel){
+          this.setError('Cant list user without an active channel.')
+        }
+        else if(splitted[0] == '/invite' && this.activeChannel != null && !this.privateChannel){
           this.inviteUserToChannel(splitted[1])
         }
+        else if(splitted[0] == '/join'){
+          this.tryJoin(splitted[1])
+        }
+        else if(splitted[0] == '/status' && (splitted[1] == 'online' || splitted[1] == 'offline' ||splitted[1] == 'dnd')){
+          this.setStatus(splitted[1])
+        }
+        else
+          this.setError('Unknown command or unknown format.')
       }
 
       if(this.activeChannel != null && !isCommand){
@@ -435,6 +448,7 @@ export default defineComponent({
     }),
     ...mapActions('auth', ['logout']),
     ...mapActions('channels', ['addMessage','leaveChannel', 'inviteUser']),
+    ...mapActions('user', ['setError', 'setStatus']),
     isMine (message: SerializedMessage): boolean {
       return message.author.id === this.currentUser
     },
@@ -448,8 +462,6 @@ export default defineComponent({
       else return 'grey-4'
     },
     getAuthorPicture () {
-      //   message: SerializedMessage
-      //   console.log('Looking for pic of user:' + message.author.id)
       const picture = 'https://cdn.quasar.dev/img/avatar5.jpg' // TODO change this from static
       return picture
     },
@@ -458,7 +470,13 @@ export default defineComponent({
     }
   },
   setup () {
-    //
+    // const store = useStore()
+    // return {
+    //   selectStatus: (status: string) => {
+    //     console.log(status)
+    //     store.dispatch('setStatus', status)
+    //   }
+    // }
   }
 })
 </script>

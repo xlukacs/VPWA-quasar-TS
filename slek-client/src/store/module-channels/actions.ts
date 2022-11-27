@@ -36,7 +36,7 @@ const actions: ActionTree<ChannelsStateInterface, StateInterface> = {
 
   async populateChannelList ({  state, rootState, commit }) {
     commit('CLEAR_CHANNELS')
-    console.log(state.channels)
+    //console.log(state.channels)
     // first load of the channels and data from DB on mount of the page
     const channelsData = (await api.get('user/getChannels')).data
 

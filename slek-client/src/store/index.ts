@@ -8,8 +8,10 @@ import {
 
 import auth from './module-auth'
 import channels from './module-channels'
+import user from './module-user'
 import type { AuthStateInterface } from './module-auth/state'
 import type { ChannelsStateInterface } from './module-channels/state'
+import type { UserStateInterface } from './module-user/state'
 
 /*
  * If not building with SSR mode, you can
@@ -26,6 +28,7 @@ export interface StateInterface {
   // Declared as unknown to avoid linting issue. Best to strongly type as per the line above.
   auth: AuthStateInterface
   channels: ChannelsStateInterface
+  userStatus: UserStateInterface
 }
 
 // provide typings for `this.$store`
@@ -42,7 +45,8 @@ export default store(function (/* { ssrContext } */) {
   const Store = createStore<StateInterface>({
     modules: {
       auth,
-      channels
+      channels,
+      user,
     },
 
     // enable strict mode (adds overhead!)
