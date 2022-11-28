@@ -66,10 +66,45 @@ export default class ChannelsController {
         //   .pivotColumns(['channel_id'])
         //   .where('invite_pending', false)
 
-        const users = await User.all()
-        //console.log(users)
+        //const users = await User.all()
+        var users_data = []
+        
+        const channel_users = await Database.from('channel_users').where('channel_id', '=', channel.id)
+        for (let i = 0; i < channel_users.length; i++) {
+            const channel = channel_users[i];
 
-        return users
+            const user_data = await User.query().where('id', '=', channel.user_id).select('*')
+            users_data.push({
+                id: user_data[0].$attributes.id,
+                email: user_data[0].$attributes.email,
+                createdAt: user_data[0].$attributes.createdAt,
+                updatedAt: user_data[0].$attributes.updatedAt,
+                username: user_data[0].$attributes.username,
+                surname: user_data[0].$attributes.surname,
+                firstname: user_data[0].$attributes.firstname,
+                status: user_data[0].$attributes.status,
+                picName: user_data[0].$attributes.pic_name
+            })
+        }
+        // channel_users.forEach(async (channel, test) => {
+        //     const user_data = await User.query().where('id', '=', channel.user_id).select('*')
+        //     console.log(test)
+        //     users_data.push({
+        //         id: user_data[0].$attributes.id,
+        //         email: user_data[0].$attributes.email,
+        //         createdAt: user_data[0].$attributes.createdAt,
+        //         updatedAt: user_data[0].$attributes.updatedAt,
+        //         username: user_data[0].$attributes.username,
+        //         surname: user_data[0].$attributes.surname,
+        //         firstname: user_data[0].$attributes.firstname,
+        //         status: user_data[0].$attributes.status,
+        //         picName: user_data[0].$attributes.pic_name
+        //     })
+        // });
+        console.log("Returning:")
+        console.log(users_data)
+
+        return users_data
     }
 
     async createInvitation({ request }: HttpContextContract){

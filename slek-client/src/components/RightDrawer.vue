@@ -47,6 +47,7 @@
             >
               <span text-color="primary">{{ user.username }}</span>
               <q-icon name="star" color="blue" v-if="user.id == channelOwner"></q-icon>
+              <q-icon name="fiber_manual_record" :color="statusColor(user.status)"></q-icon>
               <!-- <q-icon name="person" color="blue"></q-icon> -->
             </div>
           </div>
@@ -233,7 +234,7 @@
   </q-dialog>
 </template>
 
-<script>
+<script lang="ts">
 import { ref, defineComponent } from 'vue'
 import { mapMutations, mapGetters, mapActions } from 'vuex'
 
@@ -261,11 +262,8 @@ export default defineComponent({
   },
   watch: {
     activeChannelName(oldVal, newVal){
-
       if(oldVal != null && oldVal != undefined && oldVal != '')
         this.hideTopNavigator = false
-
-        //console.log('NOw it is: ', this.hideTopNavigator)
     },
     channelOwner(newVal, oldVal){
       //console.log(newVal + '-' + oldVal)
@@ -275,9 +273,19 @@ export default defineComponent({
   mounted(){
     // console.log(this.channelOwner)
     // this.isUserModerator = this.$store.state.auth.user?.id == this.$store.state.channels.activeChannel.owner ? true : false
-    this.ownId = this.$store.state.auth.user?.id
+    this.ownId = this.$store.state.auth.user?.id ? this.$store.state.auth.user?.id : 0
   },
   methods: {
+    statusColor(status: string){  
+      if(status == 'online')
+        return 'green'
+      else if(status == 'offline')
+        return 'red'
+      else if(status == 'dnd')
+        return 'yellow'
+      else
+        return 'orange'
+    },
     ...mapMutations('channels', {
       setActiveChannel: 'SET_ACTIVE'
     }),

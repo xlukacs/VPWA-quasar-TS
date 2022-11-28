@@ -12,6 +12,7 @@ export default class UsersSchema extends BaseSchema {
       table.string('username').unique()
       table.string('firstname')
       table.string('surname')
+      table.string('status').defaultTo('online')
       table.string('pic_name').defaultTo('https://cdn.quasar.dev/img/avatar5.jpg')
 
       /**

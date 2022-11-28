@@ -44,7 +44,7 @@
         </q-toolbar-title>
 
         <div class="col-md-9 row items-center justify-end">
-          <q-btn to="/login" label="Log out" class="bg-negative"></q-btn>
+          <q-btn @click="logMeOut()" label="Log out" class="bg-negative"></q-btn>
         </div>
       </q-toolbar>
       <q-toolbar v-if="showTopHamburger">
@@ -97,7 +97,7 @@
 
           <div class="row">
             <div class="col-12 row items-center justify-end">
-              <q-btn @click="logout" label="Log out" class="bg-negative"></q-btn>
+              <q-btn @click="logMeOut()" label="Log out" class="bg-negative"></q-btn>
             </div>
           </div>
         </div>
@@ -244,6 +244,7 @@
                   >
                     <span text-color="primary">{{ user.username }}</span>
                     <q-icon name="star" color="blue" v-if="user.id == channelOwner"></q-icon>
+                    <q-icon name="fiber_manual_record" :color="statusColor(user.status)"></q-icon>
                   </div>
                 </div>
               </div>
@@ -251,10 +252,6 @@
           </q-item>
         </q-list>
       </q-card-section>
-      <!-- <q-card-actions align="right">
-        <q-btn flat label="Cancel" color="primary" v-close-popup />
-        <q-btn flat label="Turn on Wifi" color="primary" v-close-popup />
-      </q-card-actions> -->
     </q-card>
   </q-dialog>
 
@@ -271,7 +268,6 @@ import { mapActions, mapGetters, mapMutations, useStore } from 'vuex'
 import { QScrollArea } from 'quasar'
 import { api } from 'src/boot/axios'
 import ErrorPrompt from 'src/components/ErrorPrompt.vue'
-import { stat } from 'fs'
 
 export default defineComponent({
   components: { LeftDrawer, RightDrawer, ErrorPrompt },
@@ -346,6 +342,20 @@ export default defineComponent({
     }
   },
   methods: {
+    logMeOut(){
+      this.logout()
+    },
+    statusColor(status: string){
+      console.log(status)  
+      if(status == 'online')
+        return 'green'
+      else if(status == 'offline')
+        return 'red'
+      else if(status == 'dnd')
+        return 'yellow'
+      else
+        return 'orange'
+    },  
     selectStatus(status: string){
       this.setStatus(status)
     },
@@ -415,10 +425,12 @@ export default defineComponent({
         const splitted = this.newMessageText.split(' ')
         if(splitted[0] == '/cancel' && this.activeChannel != null){
           this.leaveChannel(this.activeChannel)
+        }else if (splitted[0] == '/cancel' && this.activeChannel == null){
           this.setError('First join a channel, to be able to leave one.')
         }
         else if(splitted[0] == '/list' && this.activeChannel != null){
           this.showUsersInChat()
+        }else if(splitted[0] == '/list' && this.activeChannel == null){
           this.setError('Cant list user without an active channel.')
         }
         else if(splitted[0] == '/invite' && this.activeChannel != null && !this.privateChannel){
@@ -448,7 +460,7 @@ export default defineComponent({
     }),
     ...mapActions('auth', ['logout']),
     ...mapActions('channels', ['addMessage','leaveChannel', 'inviteUser']),
-    ...mapActions('user', ['setError', 'setStatus']),
+    ...mapActions('user', ['setError', 'setStatus', 'loadStatus']),
     isMine (message: SerializedMessage): boolean {
       return message.author.id === this.currentUser
     },
@@ -467,6 +479,9 @@ export default defineComponent({
     },
     showUsersInChat(){
       this.showUsersInChatDialog = true
+    },
+    fetchUserStatus(){
+      this.loadStatus()
     }
   },
   setup () {
@@ -477,6 +492,9 @@ export default defineComponent({
     //     store.dispatch('setStatus', status)
     //   }
     // }
+  },
+  mounted() {
+    this.fetchUserStatus()
   }
 })
 </script>

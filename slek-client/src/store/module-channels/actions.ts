@@ -129,9 +129,9 @@ const actions: ActionTree<ChannelsStateInterface, StateInterface> = {
     const payload = { channel: channel, user: user?.username }
 
     const users = await api.get('channels/users_in_chat', { params: payload });
-    // console.log(users.data)
+    console.log(users.data)
 
-    const parsedUsers:User[] = []
+    var parsedUsers:User[] = []
     users.data.forEach((user: { id: number; email: string; createdAt: string; updatedAt: string; username: string, picName: string, status: string }) => {
       parsedUsers.push({ id: user.id, email: user.email, createdAt: user.createdAt, updatedAt: user.updatedAt, username: user.username, picName: user.picName, status: user.status })
     });

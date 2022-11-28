@@ -33,6 +33,9 @@ Route.group(() => {
 
 Route.group(() => {
   Route.get('getChannels', 'UsersController.getChannels').middleware('auth')
+
+  Route.get('setStatus', 'UsersController.setStatus').middleware('auth')
+  Route.get('getStatus', 'UsersController.getStatus').middleware('auth')
 }).prefix('user')
 
 Route.group(() => {

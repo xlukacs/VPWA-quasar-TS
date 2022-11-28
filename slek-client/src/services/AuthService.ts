@@ -29,6 +29,7 @@ class AuthService {
   }
 
   async logout (): Promise<void> {
+    console.log("loggin out from server")
     await api.post('auth/logout')
   }
 }

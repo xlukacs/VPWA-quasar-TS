@@ -3,6 +3,7 @@ import Database from '@ioc:Adonis/Lucid/Database';
 import Channel from 'App/Models/Channel';
 //import Channel from 'App/Models/Channel'
 import User from 'App/Models/User'
+import UserRequestValidator from 'App/Validators/UserRequestValidator';
 
 
 export default class UsersController {
@@ -20,6 +21,7 @@ export default class UsersController {
         const publicChannels = await Channel.query().where('is_public', '=', 'true')
 
         var channels = []
+        // : (name: string, index: number, color: string, isPublic: boolean, owner: number, valid: boolean) 
         channels_prefetched[0].$preloaded.channels.forEach((channel) => {
             channels.push({ 
                 name: channel.$attributes.name, 
@@ -45,5 +47,20 @@ export default class UsersController {
         //console.log(channels)
 
         return channels
+    }
+
+    
+    async setStatus({ request }: HttpContextContract) {
+        const validate = await request.validate(UserRequestValidator)
+        const user = await User.findByOrFail('username', validate.user)
+
+        await Database.from('users').where('id', '=', user.id).update('status', validate.data)
+    }
+
+    async getStatus({ request } : HttpContextContract){
+        const validate = await request.validate(UserRequestValidator)
+        const user = await User.findByOrFail('username', validate.user)
+
+        return await Database.from('users').where('id', '=', user.id).select('status')
     }
 }
