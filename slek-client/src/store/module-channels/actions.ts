@@ -38,7 +38,8 @@ const actions: ActionTree<ChannelsStateInterface, StateInterface> = {
     commit('CLEAR_CHANNELS')
     //console.log(state.channels)
     // first load of the channels and data from DB on mount of the page
-    const channelsData = (await api.get('user/getChannels')).data
+    const payload = {user: rootState.auth.user?.username, data: 'temp'}
+    const channelsData = (await api.get('user/getChannels', {params: payload})).data
 
     for (const channel in channelsData) {
       if (Object.prototype.hasOwnProperty.call(channelsData, channel)) {

@@ -18,8 +18,8 @@ export default class AuthController {
       const channel = publicChannels[i];
 
       //await user.related('channels').attach([channel.id])
-      await Database.table('channel_users').insert({ 
-        user_id: user.id, 
+      await Database.table('channel_users').insert({
+        user_id: user.id,
         channel_id: channel.id,
         valid: true
     })
