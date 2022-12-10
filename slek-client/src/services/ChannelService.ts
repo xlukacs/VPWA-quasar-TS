@@ -46,6 +46,7 @@ class ChannelService {
   }
 
   public leave (name: string): boolean {
+    console.log("Leaving channel: "  + name)
     const channel = this.channels.get(name)
 
     if (!channel) {

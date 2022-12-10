@@ -154,7 +154,7 @@ export default defineComponent({
     ...mapActions('channels', ['closeChannel','leaveChannel','join']),
     leaveCurrentChannel(){
       //TODO prompt
-      console.log(this.activeChannelName)
+      //console.log(this.activeChannelName)
       this.leaveChannel(this.activeChannelName)
     
       setTimeout(() => {
@@ -163,7 +163,7 @@ export default defineComponent({
     },
     closeCurrentChannel(){
       //TODO prompt
-      console.log(this.activeChannelName)
+      //console.log(this.activeChannelName)
       this.closeChannel(this.activeChannelName)
 
       setTimeout(() => {

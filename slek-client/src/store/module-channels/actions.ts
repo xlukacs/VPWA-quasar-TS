@@ -65,7 +65,7 @@ const actions: ActionTree<ChannelsStateInterface, StateInterface> = {
     //payload = {user: rootState.auth.user?.username, data: 'temp'}
     let usersData:User[] = (await api.get('user/getUserStatuses')).data
 
-    console.log(usersData)
+    //console.log(usersData)
 
     for (let i = 0; i < usersData.length; i++) {
       const user = usersData[i];
@@ -124,7 +124,7 @@ const actions: ActionTree<ChannelsStateInterface, StateInterface> = {
 
     channelService.leave(channel)
 
-    //console.log(state.active)
+    console.log(channelService.in('general'))
     commit('SET_ACTIVE', 'general')
     //console.log(state.active)
 
@@ -138,34 +138,36 @@ const actions: ActionTree<ChannelsStateInterface, StateInterface> = {
   },
 
   async setActiveChannel({commit, rootState, state}, channel: string) {
+    
     const user = rootState.auth.user
     const payload = { channel: channel, user: user?.username }
-
+    
     const users = await api.get('channels/users_in_chat', { params: payload });
-    console.log(users.data)
-
+    // console.log(users.data)
+    
     var parsedUsers:User[] = []
     users.data.forEach((user: { id: number; email: string; createdAt: string; updatedAt: string; username: string, picName: string, status: string }) => {
       parsedUsers.push({ id: user.id, email: user.email, createdAt: user.createdAt, updatedAt: user.updatedAt, username: user.username, picName: user.picName, status: user.status })
     });
-
+    
     // console.log(parsedUsers)
     //console.log(channel)
-
+    
     commit('SET_USERS', { parsed: parsedUsers as User[], channel } )
     //commit('CHANNEL_ADDED', { channel, messages: [] as unknown as SerializedMessage, members: {} as User[] })
     //console.log(state.usersInChat[channel])
-
-    commit('SET_ACTIVE', channel)
-
+    
+    
     commit("SET_USER_STATUS", { user: rootState.auth.user?.id, status: rootState.auth.user?.status })
     let temp = rootState.auth.user?.status ? rootState.auth.user?.status : 'offline'
     await ActivityService.setStatus(temp, rootState.auth.user?.username)
+    
+    commit('SET_ACTIVE', channel)
   },
 
   async inviteUser({ commit }, { channel, user } : { channel: string, user: string }){
     const payload = { user: user, channel: channel }
-    console.log(payload)
+    //console.log(payload)
     const invitation = await api.get('channels/createInvitation', { params: payload })
 
     console.log(invitation)

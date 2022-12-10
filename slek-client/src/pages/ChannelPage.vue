@@ -347,7 +347,6 @@ export default defineComponent({
       this.logout()
     },
     statusColor(status: string){
-      console.log(status)  
       if(status == 'online')
         return 'green'
       else if(status == 'offline')
@@ -366,13 +365,22 @@ export default defineComponent({
         channel: channel,
         user: user?.username
       }
-      const isPublic = await api.get('channels/getChannelVisibility', { params: payload })
-      
-      if(isPublic.data || this.channelOwner == user?.id){
-        this.setActiveChannel(channel)
-      }else{
-        this.setError('Cant join a private channel without invitation!')
+      try {
+        const isPublic = await api.get('channels/getChannelVisibility', { params: payload })
+        console.log(isPublic)
+        
+        if(isPublic.data || this.channelOwner == user?.id){
+          this.setActiveChannel(channel)
+        }else{
+          this.setError('Cant join a private channel without invitation!')
+        }
+      } catch (error) {
+        let newChannel = { name: channel, color: 'primary', isPublic: true, owner: this.$store.state.auth.user?.id, valid: true }
+        this.addChannel(newChannel).then(() => {
+          this.setActiveChannel(channel)
+        })
       }
+
     },
     inviteUserToChannel(user: string){
       this.inviteUser({channel: this.activeChannel, user: user})
@@ -456,11 +464,11 @@ export default defineComponent({
         this.newMessageText = ''
       }
     },
-    ...mapMutations('channels', {
-      setActiveChannel: 'SET_ACTIVE'
-    }),
+    // ...mapMutations('channels', {
+    //   setActiveChannel: 'SET_ACTIVE'
+    // }),
     ...mapActions('auth', ['logout']),
-    ...mapActions('channels', ['addMessage','leaveChannel', 'inviteUser', 'setStatus']),
+    ...mapActions('channels', ['addMessage','leaveChannel', 'inviteUser', 'setStatus','addChannel','setActiveChannel']),
     ...mapActions('user', ['setError', 'loadStatus']),
     isMine (message: SerializedMessage): boolean {
       return message.author.id === this.currentUser
