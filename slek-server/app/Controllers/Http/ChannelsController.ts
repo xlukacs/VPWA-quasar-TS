@@ -118,7 +118,21 @@ export default class ChannelsController {
       .update('valid', true)
   }
 
+  //SAME AS REVOKEINVITE
   async denyInvite({ request }: HttpContextContract) {
+    const validate = await request.validate(RemoveUserValidator)
+
+    const user = await User.findByOrFail('username', validate.user)
+    const channel = await Channel.findByOrFail('name', validate.channel)
+
+    await Database.from('channel_users')
+      .where('channel_id', channel.id)
+      .where('user_id', user.id)
+      .delete()
+  }
+
+  //SAME AS DENYINVITE
+  async revokeInvite({ request }: HttpContextContract) {
     const validate = await request.validate(RemoveUserValidator)
 
     const user = await User.findByOrFail('username', validate.user)

@@ -292,9 +292,9 @@ export default defineComponent({
     ...mapGetters('user', {
       userStatus: 'getStatus',
     }),
-    activeChannel () {
-      return this.$store.state.channels.active
-    },
+    // activeChannel () {
+    //   return this.$store.state.channels.active
+    // },
     currentUser () {
       return this.$store.state.auth.user?.id
     },
@@ -383,8 +383,14 @@ export default defineComponent({
 
     },
     inviteUserToChannel(user: string){
-      this.inviteUser({channel: this.activeChannel, user: user})
-      this.setError('User ' + user + ' has been invited to channel: ' + this.activeChannel)
+      let temp = this.activeChannel ? this.activeChannel : ''
+      this.inviteUser({channel: temp, user: user})
+      this.setError('User ' + user + ' has been invited to channel: ' + temp)
+    },
+    revokeUserFunc(user: string){
+      let temp = this.activeChannel ? this.activeChannel : ''
+      this.revokeUser({ channel: temp, user: user})
+      this.setError('User ' + user + ' invite has been revoked from channel: ' + temp)
     },
     isUserTagged (message:string) {
       const words = message.split(' ')
@@ -445,6 +451,9 @@ export default defineComponent({
         else if(splitted[0] == '/invite' && this.activeChannel != null && !this.privateChannel){
           this.inviteUserToChannel(splitted[1])
         }
+        else if(splitted[0] == '/revoke' && this.activeChannel != null && !this.privateChannel){
+          this.revokeUserFunc(splitted[1])
+        }
         else if(splitted[0] == '/join'){
           this.tryJoin(splitted[1])
         }
@@ -468,7 +477,7 @@ export default defineComponent({
     //   setActiveChannel: 'SET_ACTIVE'
     // }),
     ...mapActions('auth', ['logout']),
-    ...mapActions('channels', ['addMessage','leaveChannel', 'inviteUser', 'setStatus','addChannel','setActiveChannel']),
+    ...mapActions('channels', ['addMessage','leaveChannel', 'inviteUser', 'setStatus','addChannel','setActiveChannel','revokeUser']),
     ...mapActions('user', ['setError', 'loadStatus']),
     isMine (message: SerializedMessage): boolean {
       return message.author.id === this.currentUser

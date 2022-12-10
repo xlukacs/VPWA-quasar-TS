@@ -49,6 +49,7 @@ Route.group(() => {
 
   Route.get('acceptInvitation', 'ChannelsController.acceptInvite').middleware('auth')
   Route.get('denyInvitation', 'ChannelsController.denyInvite').middleware('auth')
+  Route.get('revokeInvite', 'ChannelsController.revokeInvite').middleware('auth')
   Route.get('getValidStatus', 'ChannelsController.getValidStatus').middleware('auth')
 
   Route.get('getChannelVisibility', 'ChannelsController.getChannelVisibility').middleware('auth')

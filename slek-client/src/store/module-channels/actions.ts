@@ -167,7 +167,7 @@ const actions: ActionTree<ChannelsStateInterface, StateInterface> = {
 
   async inviteUser({ commit }, { channel, user } : { channel: string, user: string }){
     const payload = { user: user, channel: channel }
-    //console.log(payload)
+    console.log(payload)
     const invitation = await api.get('channels/createInvitation', { params: payload })
 
     console.log(invitation)
@@ -185,6 +185,11 @@ const actions: ActionTree<ChannelsStateInterface, StateInterface> = {
 
   async setUserStatus({ commit }, { user, status }: { user: User, status: string }){
     commit("SET_USER_STATUS", { user: user.id, status: status })
+  },
+
+  async revokeUser({ commit }, { user, channel }: { user: string, channel: string }){
+    const payload = { user: user, channel: channel }
+    await api.get('channels/revokeInvite', { params: payload })
   }
 }
 
