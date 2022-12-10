@@ -47,8 +47,7 @@
             >
               <span text-color="primary">{{ user.username }}</span>
               <q-icon name="star" color="blue" v-if="user.id == channelOwner"></q-icon>
-              <q-icon name="fiber_manual_record" :color="statusColor(user.status)"></q-icon>
-              <!-- <q-icon name="person" color="blue"></q-icon> -->
+              <q-icon name="fiber_manual_record" :color="statusColor(statuses[user.id])"></q-icon>
             </div>
           </div>
           <!-- <div class="col-2">
@@ -57,148 +56,6 @@
        </div>
       </q-item-section>
     </q-item>
-
-    <!-- <q-item clickable v-ripple>
-      <q-item-section avatar>
-        <q-avatar>
-          <img src="https://cdn.quasar.dev/img/boy-avatar.png" />
-        </q-avatar>
-      </q-item-section>
-      <q-item-section>
-        <div class="row">
-          <div class="col-10">
-            <div
-              class="row no-wrap justify-start items-center"
-              style="height: 100%"
-            >
-              <span text-color="primary">User 1</span>
-              <q-icon name="star" color="blue"></q-icon>
-              <q-icon name="person" color="blue"></q-icon>
-            </div>
-          </div> -->
-          <!-- <div class="col-2">
-                      <q-btn dense flat round color="primary" icon="settings" @click="userSettingsPopup = true"></q-btn>
-                  </div> -->
-       <!--  </div>
-      </q-item-section>
-    </q-item>
-    <q-item clickable v-ripple>
-      <q-item-section avatar>
-        <q-avatar>
-          <img src="https://cdn.quasar.dev/img/boy-avatar.png" />
-        </q-avatar>
-      </q-item-section>
-      <q-item-section>
-        <div class="row">
-          <div class="col-10">
-            <div
-              class="row no-wrap justify-start items-center"
-              style="height: 100%"
-            >
-              <span text-color="primary">User 2</span>
-              <q-icon name="star" color="blue"></q-icon>
-            </div>
-          </div>
-          <div class="col-2">
-            <q-btn
-              dense
-              flat
-              round
-              color="primary"
-              icon="settings"
-              @click="userSettingsPopup = true"
-            ></q-btn>
-          </div>
-        </div>
-      </q-item-section>
-    </q-item>
-    <q-item clickable v-ripple>
-      <q-item-section avatar>
-        <q-avatar>
-          <img src="https://cdn.quasar.dev/img/boy-avatar.png" />
-        </q-avatar>
-      </q-item-section>
-      <q-item-section>
-        <div class="row">
-          <div class="col-10">
-            <div
-              class="row no-wrap justify-start items-center"
-              style="height: 100%"
-            >
-              <span text-color="primary">User 3</span>
-            </div>
-          </div>
-          <div class="col-2">
-            <q-btn
-              dense
-              flat
-              round
-              color="primary"
-              icon="settings"
-              @click="userSettingsPopup = true"
-            ></q-btn>
-          </div>
-        </div>
-      </q-item-section>
-    </q-item>
-    <q-item clickable v-ripple>
-      <q-item-section avatar>
-        <q-avatar>
-          <img src="https://cdn.quasar.dev/img/boy-avatar.png" />
-        </q-avatar>
-      </q-item-section>
-      <q-item-section>
-        <div class="row">
-          <div class="col-10">
-            <div
-              class="row no-wrap justify-start items-center"
-              style="height: 100%"
-            >
-              <span text-color="primary">User 4</span>
-            </div>
-          </div>
-          <div class="col-2">
-            <q-btn
-              dense
-              flat
-              round
-              color="primary"
-              icon="settings"
-              @click="userSettingsPopup = true"
-            ></q-btn>
-          </div>
-        </div>
-      </q-item-section>
-    </q-item>
-    <q-item clickable v-ripple>
-      <q-item-section avatar>
-        <q-avatar>
-          <img src="https://cdn.quasar.dev/img/boy-avatar.png" />
-        </q-avatar>
-      </q-item-section>
-      <q-item-section>
-        <div class="row">
-          <div class="col-10">
-            <div
-              class="row no-wrap justify-start items-center"
-              style="height: 100%"
-            >
-              <span text-color="primary">User 5</span>
-            </div>
-          </div>
-          <div class="col-2">
-            <q-btn
-              dense
-              flat
-              round
-              color="primary"
-              icon="settings"
-              @click="userSettingsPopup = true"
-            ></q-btn>
-          </div>
-        </div>
-      </q-item-section>
-    </q-item> -->
   </q-list>
   <q-dialog v-model="userSettingsPopup">
     <q-card>
@@ -257,8 +114,12 @@ export default defineComponent({
       channelOwner: 'getChannelCreator',
       activeChannel: 'getActiveChannel',
       activeChannelName: 'getActiveChannelName',
-      usersInChat: 'getUsersInActiveChat'
+      usersInChat: 'getUsersInActiveChat',
+      statuses: 'getStatuses'
     }),
+    // ...mapGetters('users', {
+    //   getUserStatus: 'getu'
+    // }),
   },
   watch: {
     activeChannelName(oldVal, newVal){
@@ -276,7 +137,8 @@ export default defineComponent({
     this.ownId = this.$store.state.auth.user?.id ? this.$store.state.auth.user?.id : 0
   },
   methods: {
-    statusColor(status: string){  
+    statusColor(status: string){
+      console.log('Status' + status)  
       if(status == 'online')
         return 'green'
       else if(status == 'offline')

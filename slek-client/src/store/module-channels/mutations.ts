@@ -49,6 +49,9 @@ const mutation: MutationTree<ChannelsStateInterface> = {
   },
   CLEAR_CHANNELS(state){
     state.channels = []
+  },
+  SET_USER_STATUS(state, { user, status }: { user: number, status: string }){
+    state.statuses[user] = status
   }
 }
 

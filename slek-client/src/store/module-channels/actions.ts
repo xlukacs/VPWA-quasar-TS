@@ -5,6 +5,7 @@ import { channelService } from 'src/services'
 import { RawMessage, Channel, SerializedMessage, User } from 'src/contracts'
 import { api } from 'src/boot/axios'
 import auth from 'src/boot/auth'
+import ActivityService from 'src/services/ActivityService'
 
 const actions: ActionTree<ChannelsStateInterface, StateInterface> = {
   async join ({ commit }, channel: string) {
@@ -153,6 +154,10 @@ const actions: ActionTree<ChannelsStateInterface, StateInterface> = {
     const invitation = await api.get('channels/createInvitation', { params: payload })
 
     console.log(invitation)
+  },
+
+  async setUserStatus({ commit }, { user, status }: { user: User, status: string }){
+    commit("SET_USER_STATUS", { user: user.id, status: status });
   }
 }
 

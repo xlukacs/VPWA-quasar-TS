@@ -7,7 +7,8 @@ export interface ChannelsStateInterface {
   usersInChat: { [channel: string]: User[] }
   active: string | null,
   channels: Channel[]
-  activeChannel: Channel | null | undefined
+  activeChannel: Channel | null | undefined,
+  statuses: string[]
 }
 
 function state (): ChannelsStateInterface {
@@ -18,7 +19,8 @@ function state (): ChannelsStateInterface {
     usersInChat: {},
     active: null,
     channels: [],
-    activeChannel: null
+    activeChannel: null,
+    statuses: []
   }
 }
 

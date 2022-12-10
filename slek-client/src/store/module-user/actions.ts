@@ -1,4 +1,5 @@
 import { api } from 'src/boot/axios';
+import ActivityService from 'src/services/ActivityService';
 import { ActionTree } from 'vuex';
 import { StateInterface } from '../index';
 import { UserStateInterface } from './state';
@@ -14,6 +15,9 @@ const actions: ActionTree<UserStateInterface, StateInterface> = {
     commit('SET_STATUS', status)
 
     const payload = { user: rootState.auth.user?.username, data: status }
+
+    await ActivityService.setStatus(status, rootState.auth.user?.username)
+
     await api.get('user/setStatus', { params: payload })
   },
   async loadStatus({commit, rootState}){

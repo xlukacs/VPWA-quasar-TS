@@ -216,7 +216,7 @@
   </q-layout>
 
   <!-- Dialogs -->
-  <q-dialog v-model="showUsersInChatDialog" persistent>
+  <!-- <q-dialog v-model="showUsersInChatDialog" persistent>
     <q-card>
       <q-bar>
           <q-icon :name="getChannelStatus"></q-icon>
@@ -253,7 +253,7 @@
         </q-list>
       </q-card-section>
     </q-card>
-  </q-dialog>
+  </q-dialog> -->
 
   <ErrorPrompt />
 </template>

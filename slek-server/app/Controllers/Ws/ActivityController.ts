@@ -49,4 +49,17 @@ export default class ActivityController {
 
     logger.info('websocket disconnected', reason)
   }
+
+
+  public async setStatus({ socket, auth }: WsContextContract, {status, username} : {status: string, username: string} ) {
+    //console.log(username)
+    //console.log(status)
+
+    let user = await User.findByOrFail('username', username);
+    user.status = status
+    user.save()
+    console.log(user.status)
+
+    socket.broadcast.emit('user:status', auth.user, status)
+  }
 }
