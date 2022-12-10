@@ -60,4 +60,10 @@ export default class UsersController {
 
         return await Database.from('users').where('id', '=', user.id).select('status')
     }
+
+    async getStatuses({ request } : HttpContextContract){
+        const users = await User.all();
+
+        return users
+    }
 }

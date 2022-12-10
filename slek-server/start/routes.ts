@@ -36,6 +36,8 @@ Route.group(() => {
 
   Route.get('setStatus', 'UsersController.setStatus').middleware('auth')
   Route.get('getStatus', 'UsersController.getStatus').middleware('auth')
+
+  Route.get('getUserStatuses', 'UsersController.getStatuses').middleware('auth')
 }).prefix('user')
 
 Route.group(() => {

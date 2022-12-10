@@ -146,7 +146,7 @@ export default defineComponent({
       else if(status == 'dnd')
         return 'yellow'
       else
-        return 'orange'
+        return 'red' //DEFAULT to offline if user is not connected
     },
     ...mapMutations('channels', {
       setActiveChannel: 'SET_ACTIVE'

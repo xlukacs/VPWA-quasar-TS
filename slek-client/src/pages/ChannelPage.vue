@@ -12,7 +12,7 @@
             <img :src="userPic" />
           </q-avatar>
           {{ loggedInUserName }}
-          <q-icon name="fiber_manual_record" :color="userStatusColor"></q-icon>
+          <q-icon name="fiber_manual_record" :color="statusColor(statuses[currentUser])"></q-icon>
           <q-btn-dropdown flat color="primary" label="Status">
             <q-list>
               <q-item clickable v-close-popup  @click="setStatus('online')">
@@ -282,7 +282,8 @@ export default defineComponent({
       usersInChat: 'getUsersInActiveChat',
       channelOwner: 'getChannelCreator',
       activeChannel: 'getActiveChannelName',
-      privateChannel: 'getChannelVisibility'
+      privateChannel: 'getChannelVisibility',
+      statuses: 'getStatuses'
     }),
     ...mapGetters('auth', {
       loggedInUserName: 'getUserName',
@@ -459,8 +460,8 @@ export default defineComponent({
       setActiveChannel: 'SET_ACTIVE'
     }),
     ...mapActions('auth', ['logout']),
-    ...mapActions('channels', ['addMessage','leaveChannel', 'inviteUser']),
-    ...mapActions('user', ['setError', 'setStatus', 'loadStatus']),
+    ...mapActions('channels', ['addMessage','leaveChannel', 'inviteUser', 'setStatus']),
+    ...mapActions('user', ['setError', 'loadStatus']),
     isMine (message: SerializedMessage): boolean {
       return message.author.id === this.currentUser
     },

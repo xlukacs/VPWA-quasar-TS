@@ -10,16 +10,7 @@ const actions: ActionTree<UserStateInterface, StateInterface> = {
   },
   clearErrorMessage({ commit }){
     commit('CLEAR_ERROR')
-  },
-  async setStatus ({ commit, rootState }, status: string ) {
-    commit('SET_STATUS', status)
-
-    const payload = { user: rootState.auth.user?.username, data: status }
-
-    await ActivityService.setStatus(status, rootState.auth.user?.username)
-
-    await api.get('user/setStatus', { params: payload })
-  },
+  },  
   async loadStatus({commit, rootState}){
     // console.log(rootState.auth.user?.status)
     const payload = { user: rootState.auth.user?.username, data: 'dummyData' }

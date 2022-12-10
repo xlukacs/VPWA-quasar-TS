@@ -39,7 +39,7 @@ const actions: ActionTree<ChannelsStateInterface, StateInterface> = {
     commit('CLEAR_CHANNELS')
     //console.log(state.channels)
     // first load of the channels and data from DB on mount of the page
-    const payload = {user: rootState.auth.user?.username, data: 'temp'}
+    let payload = {user: rootState.auth.user?.username, data: 'temp'}
     const channelsData = (await api.get('user/getChannels', {params: payload})).data
 
     for (const channel in channelsData) {
@@ -60,6 +60,17 @@ const actions: ActionTree<ChannelsStateInterface, StateInterface> = {
           this.dispatch('channels/join', tempChannel.name, { root: true })
         }
       }
+    }
+
+    //payload = {user: rootState.auth.user?.username, data: 'temp'}
+    let usersData:User[] = (await api.get('user/getUserStatuses')).data
+
+    console.log(usersData)
+
+    for (let i = 0; i < usersData.length; i++) {
+      const user = usersData[i];
+      
+      ActivityService.setStatus(user.status, user.username);
     }
   },
 
@@ -146,6 +157,10 @@ const actions: ActionTree<ChannelsStateInterface, StateInterface> = {
     //console.log(state.usersInChat[channel])
 
     commit('SET_ACTIVE', channel)
+
+    commit("SET_USER_STATUS", { user: rootState.auth.user?.id, status: rootState.auth.user?.status })
+    let temp = rootState.auth.user?.status ? rootState.auth.user?.status : 'offline'
+    await ActivityService.setStatus(temp, rootState.auth.user?.username)
   },
 
   async inviteUser({ commit }, { channel, user } : { channel: string, user: string }){
@@ -156,8 +171,18 @@ const actions: ActionTree<ChannelsStateInterface, StateInterface> = {
     console.log(invitation)
   },
 
+  async setStatus ({ commit, rootState }, status: string ) {
+    commit("SET_USER_STATUS", { user: rootState.auth.user?.id, status: status })
+
+    const payload = { user: rootState.auth.user?.username, data: status }
+
+    await ActivityService.setStatus(status, rootState.auth.user?.username)
+
+    await api.get('user/setStatus', { params: payload })
+  },
+
   async setUserStatus({ commit }, { user, status }: { user: User, status: string }){
-    commit("SET_USER_STATUS", { user: user.id, status: status });
+    commit("SET_USER_STATUS", { user: user.id, status: status })
   }
 }
 
