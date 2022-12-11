@@ -1,0 +1,11 @@
+/join [CHANNEL] doesnt find endpoint to fetch availability
+prompt for leaving and deleting channels
+not static author picture at least a dropdown
+remove and add channels dynamically with sockets
+/report from admin to not create 3 identical reports but have a more clever system
+propper scaffolding for database / notnullable - references - cascase etc...
+new registered users status shows DND while they are online in DB at the same time
+
+status not loaded correctly in chatUsers after page load
+
+kick/bann report with commands

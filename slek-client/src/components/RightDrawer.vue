@@ -50,9 +50,9 @@
               <q-icon name="fiber_manual_record" :color="statusColor(statuses[user.id])"></q-icon>
             </div>
           </div>
-          <!-- <div class="col-2">
-                      <q-btn dense flat round color="primary" icon="settings" @click="userSettingsPopup = true"></q-btn>
-                  </div> -->
+          <div class="col-2" v-if="user.username != activeUsername && user.id != channelOwner">
+            <q-btn dense flat round color="primary" icon="settings" @click="userSettings(user)"></q-btn>
+          </div> 
        </div>
       </q-item-section>
     </q-item>
@@ -69,29 +69,31 @@
           options</q-toolbar-title
         >
 
-        <q-btn flat round dense icon="close" v-close-popup></q-btn>
+        <q-btn flat round dense icon="close" v-close-popup @click="userToReport = null"></q-btn>
       </q-toolbar>
 
       <q-card-section>
-        <q-btn flat dense class="bg-negative" icon="report" v-close-popup
-          >Report user</q-btn
-        >
+        <q-btn flat dense class="bg-negative" icon="report" v-close-popup @click="reportUserMethod(userToReport)">
+          Report user
+        </q-btn>
         <q-btn
-          v-if="isUserModerator"
+          v-if="ownId == channelOwner"
           flat
           dense
           class="bg-negative q-ml-sm"
           icon="person_remove"
           v-close-popup
+          @click="kickUserMethod(userToReport)"
         >
-          Kick user</q-btn
-        >
+          Kick user
+          </q-btn>
       </q-card-section>
     </q-card>
   </q-dialog>
 </template>
 
 <script lang="ts">
+import { User } from 'src/contracts'
 import { ref, defineComponent } from 'vue'
 import { mapMutations, mapGetters, mapActions } from 'vuex'
 
@@ -106,7 +108,8 @@ export default defineComponent({
     return {
       isUserModerator: false,
       ownId: 0,
-      hideTopNavigator: false
+      hideTopNavigator: false,
+      userToReport: ''
     }
   },
   computed: {
@@ -116,6 +119,9 @@ export default defineComponent({
       activeChannelName: 'getActiveChannelName',
       usersInChat: 'getUsersInActiveChat',
       statuses: 'getStatuses'
+    }),
+    ...mapGetters('auth', {
+      activeUsername: 'getUserName'
     }),
     // ...mapGetters('users', {
     //   getUserStatus: 'getu'
@@ -137,8 +143,14 @@ export default defineComponent({
     this.ownId = this.$store.state.auth.user?.id ? this.$store.state.auth.user?.id : 0
   },
   methods: {
+    userSettings(user: User){
+      this.userSettingsPopup = true
+
+      this.userToReport = user.username
+      // console.log('//'+this.userToReport)
+    },
     statusColor(status: string){
-      console.log('Status' + status)  
+      //console.log('Status' + status)  
       if(status == 'online')
         return 'green'
       else if(status == 'offline')
@@ -148,10 +160,19 @@ export default defineComponent({
       else
         return 'red' //DEFAULT to offline if user is not connected
     },
-    ...mapMutations('channels', {
-      setActiveChannel: 'SET_ACTIVE'
-    }),
-    ...mapActions('channels', ['closeChannel','leaveChannel','join']),
+    // ...mapMutations('channels', {
+    //   setActiveChannel: 'SET_ACTIVE'
+    // }),
+    ...mapActions('channels', ['closeChannel','leaveChannel','join','setActiveChannel']),
+    ...mapActions('user', ['reportUser', 'kickUser']),
+    reportUserMethod(user:string){
+      //console.log(user)
+      this.reportUser(user)
+    },
+    kickUserMethod(user:string){
+      //console.log(user)
+      this.kickUser(user)
+    },
     leaveCurrentChannel(){
       //TODO prompt
       //console.log(this.activeChannelName)

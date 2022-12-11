@@ -1,5 +1,8 @@
 import type { WsContextContract } from '@ioc:Ruby184/Socket.IO/WsContext'
 import User from 'App/Models/User'
+import Channel from 'App/Models/Channel'
+import ReportRequestValidator from 'App/Validators/ReportRequestValidator'
+import Database from '@ioc:Adonis/Lucid/Database'
 
 export default class ActivityController {
   private getUserRoom(user: User): string {
@@ -58,7 +61,7 @@ export default class ActivityController {
     let user = await User.findByOrFail('username', username);
     user.status = status
     user.save()
-    console.log(user.status)
+    //console.log(user.status)
 
     socket.broadcast.emit('user:status', auth.user, status)
   }

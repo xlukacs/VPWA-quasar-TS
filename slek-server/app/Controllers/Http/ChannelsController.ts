@@ -74,8 +74,8 @@ export default class ChannelsController {
     const user = await User.findByOrFail('username', validate.user)
     const channel = await Channel.findByOrFail('name', validate.channel)
 
-    console.log(user.$attributes)
-    console.log(channel.$attributes)
+    //console.log(user.$attributes)
+    //console.log(channel.$attributes)
 
     await Database.table('channel_users').insert({
       user_id: user.id,
@@ -112,10 +112,28 @@ export default class ChannelsController {
     const user = await User.findByOrFail('username', validate.user)
     const channel = await Channel.findByOrFail('name', validate.channel)
 
-    await Database.from('channel_users')
+    const row = await Database.from('channel_users')
+                    .where('channel_id', channel.id)
+                    .where('user_id', user.id)
+                    .select('id')
+
+
+   if(row.length > 0){
+     await Database.from('channel_users')
+     .where('channel_id', channel.id)
+     .where('user_id', user.id)
+     .update('valid', true)
+    }else{
+      await Database.table('channel_users').insert({
+        user_id: user.id,
+        channel_id: channel.id,
+      })
+
+      await Database.from('channel_users')
       .where('channel_id', channel.id)
       .where('user_id', user.id)
       .update('valid', true)
+    }
   }
 
   //SAME AS REVOKEINVITE
@@ -142,5 +160,21 @@ export default class ChannelsController {
       .where('channel_id', channel.id)
       .where('user_id', user.id)
       .delete()
+  }
+
+
+  async getChannelAvailability({ request }: HttpContextContract) {
+    console.log(request)
+    const validate = await request.validate(RemoveUserValidator)
+
+    console.log(validate.user, validate.channel)
+
+    try {
+      const channel = await Channel.findByOrFail('name', validate.channel)
+      
+      return { status: "used", isPublic: channel[0].isPublic };
+    } catch (error) {
+      return { status: "unused", isPublic: null };
+    }
   }
 }

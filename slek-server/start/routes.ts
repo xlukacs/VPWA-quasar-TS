@@ -38,6 +38,10 @@ Route.group(() => {
   Route.get('getStatus', 'UsersController.getStatus').middleware('auth')
 
   Route.get('getUserStatuses', 'UsersController.getStatuses').middleware('auth')
+
+
+  Route.get('reportUser', 'UsersController.reportUser').middleware('auth')
+  Route.get('kickUser', 'UsersController.kickUser').middleware('auth')
 }).prefix('user')
 
 Route.group(() => {
@@ -53,4 +57,5 @@ Route.group(() => {
   Route.get('getValidStatus', 'ChannelsController.getValidStatus').middleware('auth')
 
   Route.get('getChannelVisibility', 'ChannelsController.getChannelVisibility').middleware('auth')
+  Route.get('getChannelAvailability', 'ChannelsController.getChannelAvailability').middleware('auth')
 }).prefix('channels')

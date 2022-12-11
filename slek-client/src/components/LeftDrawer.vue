@@ -193,7 +193,9 @@ export default defineComponent({
         newChannelThemeColor = "primary";
 
       let channel = { name: this.newChannelName, color: newChannelThemeColor, isPublic: canBePublic, owner: this.$store.state.auth.user?.id, valid: true }
-      this.addChannel(channel)
+      this.addChannel(channel).then(() => {
+        this.setActiveChannel(channel)
+      })
       this.loading = false
 
       this.newChannelName = ''

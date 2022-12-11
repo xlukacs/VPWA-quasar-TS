@@ -146,7 +146,7 @@
     </q-drawer>
 
     <q-page-container style="height: 100vh">
-      <span v-if="!activeChannel" class="hologram q-pa-md">
+      <span v-if="activeChannel =='default'" class="hologram q-pa-md">
         This is the default lobby. To proceed please join a channel from the list. <br>
         Forher available commands:
         <ul>
@@ -365,6 +365,10 @@ export default defineComponent({
         channel: channel,
         user: user?.username
       }
+
+      const channelAvailability = await api.get('channels/getChannelAvailability', { params: payload })
+      console.log(channelAvailability.data)
+
       try {
         const isPublic = await api.get('channels/getChannelVisibility', { params: payload })
         console.log(isPublic)

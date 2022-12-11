@@ -16,6 +16,12 @@ class ChannelSocketManager extends SocketManager {
     this.socket.on('removeChannel', async (channelName: string) => {
       store.dispatch('channels/removeChannel', channelName, { root: true })
     })
+
+    this.socket.on('user:leave', async (username: string, channel: string) => {
+      //console.log('Remove channel' + username, channel)
+      if(store.state.auth.user?.username == username)
+        store.dispatch('channels/removeChannel', channel, { root: true })
+    })
   }
 
   public addMessage (message: RawMessage): Promise<SerializedMessage> {
@@ -28,6 +34,16 @@ class ChannelSocketManager extends SocketManager {
 
   public removeChannel (channel: string) {
     return this.emitAsync('removeChannel', channel)
+  }
+
+  public kickUser (channel: string, user: string, reported: string) {
+    //console.log({ channel, user, reported })
+    return this.emitAsync('kickUser', { channel, user, reported })
+  }
+
+  public reportUser (channel: string, user: string, reported: string) {
+    //console.log({ channel, user, reported })
+    return this.emitAsync('reportUser', { channel, user, reported })
   }
 }
 
@@ -59,6 +75,7 @@ class ChannelService {
   }
 
   public in (name: string): ChannelSocketManager | undefined {
+    //console.log(this.channels.get(name))
     return this.channels.get(name)
   }
 }
