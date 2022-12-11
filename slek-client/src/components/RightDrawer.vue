@@ -69,7 +69,7 @@
           options</q-toolbar-title
         >
 
-        <q-btn flat round dense icon="close" v-close-popup @click="userToReport = null"></q-btn>
+        <q-btn flat round dense icon="close" v-close-popup @click="userToReport = ''"></q-btn>
       </q-toolbar>
 
       <q-card-section>
@@ -107,7 +107,6 @@ export default defineComponent({
   data(){
     return {
       isUserModerator: false,
-      ownId: 0,
       hideTopNavigator: false,
       userToReport: ''
     }
@@ -121,7 +120,8 @@ export default defineComponent({
       statuses: 'getStatuses'
     }),
     ...mapGetters('auth', {
-      activeUsername: 'getUserName'
+      activeUsername: 'getUserName',
+      ownId: 'getOwnId'
     }),
     // ...mapGetters('users', {
     //   getUserStatus: 'getu'
@@ -140,7 +140,8 @@ export default defineComponent({
   mounted(){
     // console.log(this.channelOwner)
     // this.isUserModerator = this.$store.state.auth.user?.id == this.$store.state.channels.activeChannel.owner ? true : false
-    this.ownId = this.$store.state.auth.user?.id ? this.$store.state.auth.user?.id : 0
+    
+    //this.ownId = this.$store.state.auth.user?.id ? this.$store.state.auth.user?.id : 0
   },
   methods: {
     userSettings(user: User){

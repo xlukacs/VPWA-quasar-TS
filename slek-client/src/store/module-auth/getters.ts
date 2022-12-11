@@ -11,6 +11,9 @@ const getters: GetterTree<AuthStateInterface, StateInterface> = {
   },
   getUserPic(context){
     return context.user?.picName;
+  },
+  getOwnId(context){
+    return context.user?.id;
   }
 }
 

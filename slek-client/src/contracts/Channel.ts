@@ -6,3 +6,8 @@ export interface Channel{
     owner: number,
     valid: boolean
 }
+
+export interface Typer{
+    username: string,
+    message: string
+}

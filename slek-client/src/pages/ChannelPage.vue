@@ -1,8 +1,4 @@
 <template>
-  <!-- <q-page class="row items-center justify-evenly">
-    <channel-messages-component :messages="messages" />
-  </q-page> -->
-
   <q-layout view="hHh lpR fFf">
     <q-header elevated class="bg-dark text-white">
       <q-resize-observer @resize="onResize"></q-resize-observer>
@@ -55,7 +51,7 @@
                 <img src="https://cdn.quasar.dev/img/avatar5.jpg" />
               </q-avatar>
               {{ loggedInUserName }}
-              <q-icon name="fiber_manual_record" color="green"></q-icon>
+              <q-icon name="fiber_manual_record" :color="statusColor(statuses[currentUser])"></q-icon>
               <q-btn-dropdown
                 flat
                 color="primary"
@@ -159,7 +155,7 @@
       <div class="q-pa-sm column" style="height: 100%; overflow: hidden">
         <q-scroll-area ref="chatArea"
           class="justify-center"
-          :class="getMessageAreaHeight(isHamburgerOpen, typingCount)"
+          :class="getMessageAreaHeight(isHamburgerOpen, typerCount)"
         >
           <q-chat-message v-for="message in messages"
             v-bind:key="message.id"
@@ -173,9 +169,9 @@
             :avatar="getAuthorPicture()"
           />
         </q-scroll-area>
-        <div v-if="typingCount == 1" class="col-1 q-ml-md special-zone">
+        <div v-if="typerCount == 1" class="col-1 q-ml-md special-zone">
           <q-spinner-dots size="2rem"></q-spinner-dots>
-          <q-btn
+          <!-- <q-btn
             flat
             unelevated
             text-color="white"
@@ -183,9 +179,21 @@
             label="Doe is typing..."
           >
             <q-tooltip> The currenlty typed text by the other user </q-tooltip>
+          </q-btn> -->
+
+          <q-btn
+            flat
+            unelevated
+            text-color="white"
+            class="q-ml-sm no-hover-state"
+            :label="typer.username + ' is typing...'"
+            v-for="typer in typers"
+            v-bind:key="typer.id"
+          >
+            <q-tooltip> {{ typer.message }} </q-tooltip>
           </q-btn>
         </div>
-        <div v-if="typingCount > 1" class="col-1 q-ml-md">
+        <div v-if="typerCount > 1" class="col-1 q-ml-md">
           <q-spinner-dots size="2rem"></q-spinner-dots>
           <span class="q-ml-sm">Multiple people are typing...</span>
         </div>
@@ -199,6 +207,9 @@
             maxlength="128"
             :dense="!isHamburgerOpen"
             class="col-md-12"
+            @keydown.enter="send"
+            @change="sendUpdate"
+
           >
             <template v-slot:before>
               <q-avatar>
@@ -216,7 +227,7 @@
   </q-layout>
 
   <!-- Dialogs -->
-  <!-- <q-dialog v-model="showUsersInChatDialog" persistent>
+  <q-dialog v-model="showUsersInChatDialog" persistent>
     <q-card>
       <q-bar>
           <q-icon :name="getChannelStatus"></q-icon>
@@ -244,22 +255,59 @@
                   >
                     <span text-color="primary">{{ user.username }}</span>
                     <q-icon name="star" color="blue" v-if="user.id == channelOwner"></q-icon>
-                    <q-icon name="fiber_manual_record" :color="statusColor(user.status)"></q-icon>
+                    <q-icon name="fiber_manual_record" :color="statusColor(statuses[user.id])"></q-icon>
                   </div>
                 </div>
+                <div class="col-2" v-if="user.username != loggedInUserName && user.id != channelOwner">
+                  <q-btn dense flat round color="primary" icon="settings" @click="userSettings(user)"></q-btn>
+                </div> 
               </div>
             </q-item-section>
           </q-item>
         </q-list>
       </q-card-section>
     </q-card>
-  </q-dialog> -->
+  </q-dialog>
+
+  <q-dialog v-model="userSettingsPopup">
+    <q-card>
+      <q-toolbar>
+        <q-avatar>
+          <img src="https://cdn.quasar.dev/img/boy-avatar.png" />
+        </q-avatar>
+
+        <q-toolbar-title
+          ><span class="text-weight-bold">Username </span>
+          options</q-toolbar-title
+        >
+
+        <q-btn flat round dense icon="close" v-close-popup @click="userToReport = ''"></q-btn>
+      </q-toolbar>
+
+      <q-card-section>
+        <q-btn flat dense class="bg-negative" icon="report" v-close-popup @click="reportUserMethod(userToReport)">
+          Report user
+        </q-btn>
+        <q-btn
+          v-if="ownId == channelOwner"
+          flat
+          dense
+          class="bg-negative q-ml-sm"
+          icon="person_remove"
+          v-close-popup
+          @click="kickUserMethod(userToReport)"
+        >
+          Kick user
+          </q-btn>
+      </q-card-section>
+    </q-card>
+  </q-dialog>
 
   <ErrorPrompt />
 </template>
 
 <script lang="ts">
-import { SerializedMessage } from 'src/contracts'
+import { SerializedMessage, User } from 'src/contracts'
 import { defineComponent, ref } from 'vue'
 import LeftDrawer from 'src/components/LeftDrawer.vue'
 import RightDrawer from '../components/RightDrawer.vue'
@@ -268,6 +316,7 @@ import { mapActions, mapGetters, mapMutations, useStore } from 'vuex'
 import { QScrollArea } from 'quasar'
 import { api } from 'src/boot/axios'
 import ErrorPrompt from 'src/components/ErrorPrompt.vue'
+import { channelService } from 'src/services'
 
 export default defineComponent({
   components: { LeftDrawer, RightDrawer, ErrorPrompt },
@@ -283,11 +332,14 @@ export default defineComponent({
       channelOwner: 'getChannelCreator',
       activeChannel: 'getActiveChannelName',
       privateChannel: 'getChannelVisibility',
-      statuses: 'getStatuses'
+      statuses: 'getStatuses',
+      typerCount: 'getTyperCount',
+      typers: 'getTypers'
     }),
     ...mapGetters('auth', {
       loggedInUserName: 'getUserName',
-      userPic: 'getUserPic'
+      userPic: 'getUserPic',
+      ownId: 'getOwnId'
     }),
     ...mapGetters('user', {
       userStatus: 'getStatus',
@@ -316,7 +368,23 @@ export default defineComponent({
         this.userStatusColor = 'red'
       else if(newVal == 'dnd')
         this.userStatusColor = 'yellow'
-    }
+    },
+    newMessageText(newVal, oldVal){
+      //console.log(newVal)
+      
+      //console.log(this.$store.state.channels.activeTypers)
+      let service = channelService.in(this.activeChannel)
+      service?.broadcastTyping(newVal)
+    },
+    // typers(newVal){
+    //   console.log(newVal)
+    // }
+    // typerCount: {
+    //   handler(){
+    //     console.log("VALCHANGE")
+    //   },
+    //   deep: true
+    // }
   },
   data () {
     return {
@@ -336,10 +404,28 @@ export default defineComponent({
       typingCount: 0,
 
       showUsersInChatDialog: false,
-      userStatusColor: 'green'
+      userStatusColor: 'green',
+      userSettingsPopup: false,
+      userToReport: ''
     }
   },
   methods: {
+    userSettings(user: User){
+      this.userSettingsPopup = true
+
+      this.userToReport = user.username
+    },
+    reportUserMethod(user:string){
+      //console.log(user)
+      this.reportUser(user)
+    },
+    kickUserMethod(user:string){
+      //console.log(user)
+      this.kickUser(user)
+    },
+    sendUpdate(){
+      console.log(this.newMessageText)
+    },
     logMeOut(){
       this.logout()
     },

@@ -1,4 +1,4 @@
-import { RawMessage, SerializedMessage } from 'src/contracts'
+import { Channel, RawMessage, SerializedMessage } from 'src/contracts'
 import { channelService } from '.'
 import { BootParams, SocketManager } from './SocketManager'
 
@@ -18,9 +18,31 @@ class ChannelSocketManager extends SocketManager {
     })
 
     this.socket.on('user:leave', async (username: string, channel: string) => {
-      //console.log('Remove channel' + username, channel)
+      console.log('Remove channel' + username, channel)
       if(store.state.auth.user?.username == username)
         store.dispatch('channels/removeChannel', channel, { root: true })
+    })
+
+    this.socket.on('user:removeFromChatUsers', async (username: string, channel: string) => {
+      console.log("OWN EMIT")
+      let payload = {channel: channel, user: username } 
+      store.dispatch('channels/removeUserFromChannel', payload)
+    })
+
+    this.socket.on('user:gotInvited', async (username: string, channel: Channel) => {
+      if(store.state.auth.user?.username == username){
+        let payload = {channel: channel, isValid: false } 
+        store.dispatch('channels/addChannelToList', payload, { root: true })
+      }
+    })
+    
+    this.socket.on('user:newMessageTyped', async (username: string, message: string) => {
+      //console.log('user:newMessageTyped' + username + message)
+      if(store.state.auth.user?.username != username){
+        let payload = {message: message, username: username } 
+        // console.log(payload)
+        store.dispatch('channels/addTyper', payload, { root: true })
+      }
     })
   }
 
@@ -44,6 +66,14 @@ class ChannelSocketManager extends SocketManager {
   public reportUser (channel: string, user: string, reported: string) {
     //console.log({ channel, user, reported })
     return this.emitAsync('reportUser', { channel, user, reported })
+  }
+
+  public sendInvite (channel: string, user: string) {
+    return this.emitAsync('sendInvite', { channel, user })
+  }
+
+  public broadcastTyping(message: string){
+    return this.emitAsync('broadcastTyping', message)
   }
 }
 

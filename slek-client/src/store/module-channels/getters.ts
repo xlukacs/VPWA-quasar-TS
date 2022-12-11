@@ -41,6 +41,16 @@ const getters: GetterTree<ChannelsStateInterface, StateInterface> = {
   },
   getStatuses (context) {
     return context.statuses
+  },
+  getTyperCount(context){
+    if(context.activeTypers.public){
+      return context.activeTypers.public.length ? context.activeTypers.public.length : 0
+    }
+
+    return 0
+  },
+  getTypers(context){
+    return context.activeTypers.public
   }
 }
 

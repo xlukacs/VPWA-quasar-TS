@@ -1,4 +1,4 @@
-import { SerializedMessage, Channel, User } from 'src/contracts'
+import { SerializedMessage, Channel, User, Typer } from 'src/contracts'
 
 export interface ChannelsStateInterface {
   loading: boolean,
@@ -8,7 +8,8 @@ export interface ChannelsStateInterface {
   active: string | null,
   channels: Channel[]
   activeChannel: Channel | null | undefined,
-  statuses: string[]
+  statuses: string[],
+  activeTypers: { [channel: string]: Typer[] }
 }
 
 function state (): ChannelsStateInterface {
@@ -20,7 +21,8 @@ function state (): ChannelsStateInterface {
     active: null,
     channels: [],
     activeChannel: null,
-    statuses: []
+    statuses: [],
+    activeTypers: {}
   }
 }
 

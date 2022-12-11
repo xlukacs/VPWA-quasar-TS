@@ -57,6 +57,7 @@ export default class MessageController {
       await Database.from('channel_users').where('user_id','=',reported.id).where('channel_id','=',channel.id).delete()
 
       socket.broadcast.emit('user:leave', reported.username, channel.name)
+      socket.emit('user:removeFromChatUsers', reported.username, channel.name)
     }
   }
 
@@ -77,7 +78,25 @@ export default class MessageController {
       await Database.from('channel_users').where('user_id','=',reported.id).where('channel_id','=',channel.id).delete()
       
       socket.broadcast.emit('user:leave', reported.username, channel.name)
+      socket.emit('user:removeFromChatUsers', reported.username, channel.name)
     }
 
   }
+
+  public async sendInvite({ socket }: WsContextContract, data: any ) { 
+    const user = await User.findByOrFail('username', data.user)
+    const channel = await Channel.findByOrFail('name', data.channel)
+
+    await Database.table('channel_users').insert({
+      user_id: user.id,
+      channel_id: channel.id,
+    })
+
+    socket.broadcast.emit('user:gotInvited', user.username, channel)
+  }
+
+  public async broadcastTyping({ socket,auth }: WsContextContract, data: any ) { 
+    socket.broadcast.emit('user:newMessageTyped', auth.user?.username, data)
+  }
+  
 }

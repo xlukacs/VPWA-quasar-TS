@@ -39,6 +39,7 @@ Route.group(() => {
 
   Route.get('getUserStatuses', 'UsersController.getStatuses').middleware('auth')
 
+  Route.get('getUser', 'UsersController.getUser').middleware('auth')
 
   Route.get('reportUser', 'UsersController.reportUser').middleware('auth')
   Route.get('kickUser', 'UsersController.kickUser').middleware('auth')

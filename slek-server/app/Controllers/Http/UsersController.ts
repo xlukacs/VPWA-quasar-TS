@@ -68,6 +68,13 @@ export default class UsersController {
         return users
     }
 
+    async getUser({ request } : HttpContextContract){
+        const validate = await request.validate(UserRequestValidator)
+        const user = await User.findByOrFail('username', validate.user)
+
+        return user;
+    }
+
     async reportUser({ request } : HttpContextContract){
         const validate = await request.validate(ReportRequestValidator)
         console.log(validate)
@@ -120,8 +127,6 @@ export default class UsersController {
         if(reportCount.length >= 3){
             await Database.from('reports').where('reported_id','=',reported.id).where('channel_id','=',channel.id).delete()
             await Database.from('channel_users').where('user_id','=',reported.id).where('channel_id','=',channel.id).delete()
-
-
         }
     }
 }

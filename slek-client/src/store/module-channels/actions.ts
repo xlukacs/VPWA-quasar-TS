@@ -57,7 +57,7 @@ const actions: ActionTree<ChannelsStateInterface, StateInterface> = {
 
           commit('ADD_CHANNEL', tempChannel)
 
-          console.log("Joining " + tempChannel.name)
+          //console.log("Joining " + tempChannel.name)
           this.dispatch('channels/join', tempChannel.name, { root: true })
 
           let innerPayload = {user: rootState.auth.user?.username, channel: tempChannel.name}
@@ -103,6 +103,13 @@ const actions: ActionTree<ChannelsStateInterface, StateInterface> = {
     commit('SET_ACTIVE', channel)
 
     return channel
+  },
+
+  async addChannelToList({commit}, data: any){
+    console.log(data)    
+    let tempChannel = data.channel
+    tempChannel.isValid = data.isValid
+    commit('ADD_CHANNEL', tempChannel)
   },
 
   async leaveChannel({ commit, rootState, state }, channel: string ) {
@@ -181,10 +188,11 @@ const actions: ActionTree<ChannelsStateInterface, StateInterface> = {
 
   async inviteUser({ commit }, { channel, user } : { channel: string, user: string }){
     const payload = { user: user, channel: channel }
-    console.log(payload)
-    const invitation = await api.get('channels/createInvitation', { params: payload })
+    
+    await api.get('channels/createInvitation', { params: payload })
+    // let service = channelService.in(channel)
 
-    console.log(invitation)
+    // await service?.sendInvite(channel, user)
   },
 
   async setStatus ({ commit, rootState }, status: string ) {
@@ -204,7 +212,19 @@ const actions: ActionTree<ChannelsStateInterface, StateInterface> = {
   async revokeUser({ commit }, { user, channel }: { user: string, channel: string }){
     const payload = { user: user, channel: channel }
     await api.get('channels/revokeInvite', { params: payload })
-  }
+  },
+
+  async addTyper({ commit }, { message, username }: { message: string, username: string }){
+    commit("ADD_TYPER", { message: message, username: username })
+  }, 
+
+  async removeUserFromChannel({ commit }, { channel, user }: { channel: string, user: string }){
+    const payload = { user: user, data: 'dummy' }
+    
+    const userObject = await api.get('user/getUser', { params: payload })
+    commit("REMOVE_USER_FROM_CHANNEL", { channel: channel, user: userObject })
+  }  
+  
 }
 
 export default actions
