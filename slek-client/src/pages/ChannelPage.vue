@@ -370,12 +370,17 @@ export default defineComponent({
         this.userStatusColor = 'yellow'
     },
     newMessageText(newVal, oldVal){
-      //console.log(newVal)
+      console.log(newVal)
       
       //console.log(this.$store.state.channels.activeTypers)
       let service = channelService.in(this.activeChannel)
       service?.broadcastTyping(newVal)
     },
+    activeChannel(newVal, oldVal){
+      this.newMessageText = ''
+      let service = channelService.in(oldVal)
+      service?.broadcastTyping('')
+    }
     // typers(newVal){
     //   console.log(newVal)
     // }

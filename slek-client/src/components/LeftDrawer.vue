@@ -6,7 +6,7 @@
       :key="channel.index"
       clickable
       v-ripple
-      @click="setActiveChannel(channel.name)"
+      @click="setActiveChannelMethod(channel.name)"
     >
       <q-item-section avatar>
         <q-avatar
@@ -163,6 +163,9 @@ export default defineComponent({
     // ...mapMutations('channels', {
     //   setActiveChannel: 'SET_ACTIVE'
     // }),
+    setActiveChannelMethod(channelName: string){
+      this.setActiveChannel(channelName)
+    },
     async acceptInvitation(channelName: string){
       console.log(channelName)
       const payload = { channel: channelName, user: this.$store.state.auth.user?.username }
