@@ -292,9 +292,6 @@ export default defineComponent({
     ...mapGetters('user', {
       userStatus: 'getStatus',
     }),
-    // activeChannel () {
-    //   return this.$store.state.channels.active
-    // },
     currentUser () {
       return this.$store.state.auth.user?.id
     },
@@ -461,6 +458,14 @@ export default defineComponent({
         else if(splitted[0] == '/join'){
           this.tryJoin(splitted[1])
         }
+        //we are outright banning the user
+        else if(splitted[0] == '/kick' && this.activeChannel != null && this.channelOwner == this.$store.state.auth.user?.id){
+          this.kickUser(splitted[1])
+        }
+        //create a kick request
+        else if(splitted[0] == '/kick' && this.activeChannel != null && this.channelOwner != this.$store.state.auth.user?.id){
+          this.reportUser(splitted[1])
+        }
         else if(splitted[0] == '/status' && (splitted[1] == 'online' || splitted[1] == 'offline' ||splitted[1] == 'dnd')){
           this.setStatus(splitted[1])
         }
@@ -477,12 +482,9 @@ export default defineComponent({
         this.newMessageText = ''
       }
     },
-    // ...mapMutations('channels', {
-    //   setActiveChannel: 'SET_ACTIVE'
-    // }),
     ...mapActions('auth', ['logout']),
     ...mapActions('channels', ['addMessage','leaveChannel', 'inviteUser', 'setStatus','addChannel','setActiveChannel','revokeUser']),
-    ...mapActions('user', ['setError', 'loadStatus']),
+    ...mapActions('user', ['setError', 'loadStatus','kickUser', 'reportUser']),
     isMine (message: SerializedMessage): boolean {
       return message.author.id === this.currentUser
     },
@@ -507,13 +509,6 @@ export default defineComponent({
     }
   },
   setup () {
-    // const store = useStore()
-    // return {
-    //   selectStatus: (status: string) => {
-    //     console.log(status)
-    //     store.dispatch('setStatus', status)
-    //   }
-    // }
   },
   mounted() {
     this.fetchUserStatus()
