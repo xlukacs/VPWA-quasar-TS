@@ -486,7 +486,7 @@ export default defineComponent({
     },
     isUserTagged (message:string) {
       const words = message.split(' ')
-      const ownMentionTag = '#' + this.$store.state.auth.user?.username
+      const ownMentionTag = '@' + this.$store.state.auth.user?.username
 
       let found = false
       words.forEach(word => {

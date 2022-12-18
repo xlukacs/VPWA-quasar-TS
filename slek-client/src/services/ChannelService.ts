@@ -1,6 +1,7 @@
 import { Channel, RawMessage, SerializedMessage, User } from 'src/contracts'
 import { channelService } from '.'
 import { BootParams, SocketManager } from './SocketManager'
+import { AppVisibility } from 'quasar'
 
 // creating instance of this class automatically connects to given socket.io namespace
 // subscribe is called with boot params, so you can use it to dispatch actions for socket events
@@ -14,16 +15,20 @@ class ChannelSocketManager extends SocketManager {
     })
 
     this.socket.on('mentionUser', async (userMentioned: string, message: string) => {
-      if(store.state.auth.user?.username == userMentioned && store.state.userStatus.status == 'online'){
-        if (Notification.permission === "granted") {
-          console.log(message)
-          const notification = new Notification('You have been mentioned! ', { body: message })
-        } else if (Notification.permission !== "denied") {
-          Notification.requestPermission().then((permission) => {
-            if (permission === "granted") {
-              const notification = new Notification('You have been mentioned! ', { body: message })
-            }
-          })
+      const canHaveInvites = AppVisibility.appVisible
+      
+      
+      if(store.getters['user/getStatus'] == 'online'){ 
+        if(store.state.auth.user?.username == userMentioned){
+          if (Notification.permission === "granted" && canHaveInvites) {
+            const notification = new Notification('You have been mentioned! ', { body: message })
+          } else if (Notification.permission !== "denied") {
+            Notification.requestPermission().then((permission) => {
+              if (permission === "granted" && canHaveInvites) {
+                const notification = new Notification('You have been mentioned! ', { body: message })
+              }
+            })
+          }
         }
       }
     })

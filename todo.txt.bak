@@ -4,7 +4,7 @@ prompt for leaving and deleting channels
 
  +-// not static author picture at least a dropdown
  
-remove and add channels dynamically with sockets
+ - remove and add channels dynamically with sockets
 
  / report from admin to not create 3 identical reports but have a more clever system
  
@@ -24,8 +24,12 @@ multiple people mentioned
 
  - after kick or invite deny user still sees the channel messages
 
-users in chat not found at new channel creation
+ - users in chat not found at new channel creation
 
 maybe deny user list load-in if user is not part of chat
 
  - user status top left again???
+ 
+visibility for notifications
+change to @mention from #mention
+

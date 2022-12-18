@@ -27,7 +27,7 @@ export default class MessageController {
     // broadcast message to other users in channel
     socket.broadcast.emit('message', message)
 
-    const res = content.match("#[a-zA-Z]*")
+    const res = content.match("@[a-zA-Z]*")
    
     if(res){
       const mentionedUser = res[0].substring(1)
