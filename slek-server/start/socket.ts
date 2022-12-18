@@ -13,6 +13,7 @@ Ws.namespace('/')
   .connected('ActivityController.onConnected')
   .disconnected('ActivityController.onDisconnected')
   .on('setStatus', 'ActivityController.setStatus')
+  .on('sendInvite', 'ActivityController.sendInvite')
 
 // this is dynamic namespace, in controller methods we can use params.name
 Ws.namespace('channels/:name')
@@ -21,5 +22,8 @@ Ws.namespace('channels/:name')
   .on('addMessage', 'MessageController.addMessage')
   .on('kickUser', 'MessageController.kickUser')
   .on('reportUser', 'MessageController.reportUser')
-  .on('sendInvite', 'MessageController.sendInvite')
   .on('broadcastTyping', 'MessageController.broadcastTyping')
+  .on('userJoined', 'MessageController.userJoinedChannel')
+  .on('removeChannel', 'MessageController.removeChannel')
+  .on('removeUserFromList', 'MessageController.removeUserFromList')
+

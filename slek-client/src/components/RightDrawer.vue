@@ -3,7 +3,7 @@
     <div class="col-8">
       <h5 class="q-ma-sm">{{ activeChannel.name  }}</h5>
     </div>
-    <div class="col" v-if="(channelOwner != undefined && !hideTopNavigator)">
+    <div class="col" v-if="(channelOwner != undefined && !hideTopNavigator && activeChannel.valid)">
       <q-btn
         v-if="ownId == channelOwner"
         dense

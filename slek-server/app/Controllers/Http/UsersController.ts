@@ -44,6 +44,7 @@ export default class UsersController {
         })
 
 
+        //console.log(channels)
     return channels
   }
 

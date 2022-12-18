@@ -27,3 +27,5 @@ multiple people mentioned
 users in chat not found at new channel creation
 
 maybe deny user list loadin if user is not part of chat
+
+user status top left again???

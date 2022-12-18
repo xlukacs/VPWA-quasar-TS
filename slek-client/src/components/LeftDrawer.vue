@@ -164,6 +164,7 @@ export default defineComponent({
     //   setActiveChannel: 'SET_ACTIVE'
     // }),
     setActiveChannelMethod(channelName: string){
+      //console.log(clear new text message input)
       this.setActiveChannel(channelName)
     },
     async acceptInvitation(channelName: string){

@@ -93,14 +93,21 @@ const mutation: MutationTree<ChannelsStateInterface> = {
   TRY_JOIN_USER ( state, { channel, user } :  { channel: string, user: User }){
     let found = false
 
-    for (let i = 0; i < state.usersInChat[channel].length; i++) {
-      const userObj = state.usersInChat[channel][i];
-      if(userObj.username == user.username || found)
-        found = true
+    try {
+      if(state.usersInChat){
+        for (let i = 0; i < state.usersInChat[channel].length; i++) {
+          const userObj = state.usersInChat[channel][i];
+          console.log(userObj)
+          if(userObj.username == user.username || found)
+          found = true
+        }
+      }
+      
+      if(!found)
+        state.usersInChat[channel].push(user)
+    } catch (error) {
+      console.log("User tried to join this chat without permission.")
     }
-
-    if(!found)
-      state.usersInChat[channel].push(user)
   },
   // CLEAR_TYPER(state, username:string){
   //   let channelName = state.activeChannel?.name ? state.activeChannel?.name : 'general'

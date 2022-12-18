@@ -43,6 +43,10 @@ const actions: ActionTree<UserStateInterface, StateInterface> = {
       //console.log(service)
       await service?.kickUser(payload.channel, payload.user, payload.reported)
     }
+  },
+
+  async setOwnStatus({ commit }, status:string){
+    commit("SET_STATUS", status)
   }
 };
 

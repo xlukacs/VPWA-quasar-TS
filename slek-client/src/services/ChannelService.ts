@@ -25,8 +25,6 @@ class ChannelSocketManager extends SocketManager {
             }
           })
         }
-      }else if(store.state.auth.user?.username == userMentioned && store.state.userStatus.status == 'dnd'){
-
       }
     })
 
@@ -45,13 +43,6 @@ class ChannelSocketManager extends SocketManager {
       let payload = {channel: channel, user: username } 
       store.dispatch('channels/removeUserFromChannel', payload)
     })
-
-    this.socket.on('user:gotInvited', async (username: string, channel: Channel) => {
-      if(store.state.auth.user?.username == username){
-        let payload = {channel: channel, isValid: false } 
-        store.dispatch('channels/addChannelToList', payload, { root: true })
-      }
-    })
     
     this.socket.on('user:newMessageTyped', async (username: string, message: string) => {
       //console.log('user:newMessageTyped' + username + message)
@@ -66,6 +57,16 @@ class ChannelSocketManager extends SocketManager {
       let payload = {channel: channel, username: user } 
       //console.log(payload)
       store.dispatch('channels/tryJoinUser', payload, { root: true })
+    })
+
+    this.socket.on('channel:channelRemoved', async (channel: string) => {
+      store.dispatch('channels/removeChannel', channel, { root: true })
+      store.dispatch('channels/leaveChannelAndJoinGeneral', channel, { root: true })
+    })
+
+    this.socket.on('channel:removeUserFromList', async (channel: string, user: string) => {
+      let payload = {channel: channel, user: user } 
+      store.dispatch('channels/removeUserFromChannel', payload)
     })
   }
 
@@ -91,16 +92,16 @@ class ChannelSocketManager extends SocketManager {
     return this.emitAsync('reportUser', { channel, user, reported })
   }
 
-  public sendInvite (channel: string, user: string) {
-    return this.emitAsync('sendInvite', { channel, user })
-  }
-
   public broadcastTyping(message: string){
     return this.emitAsync('broadcastTyping', message)
   }
 
   public userJoinedChannel(channel: string){
     this.emitAsync('userJoined', channel)
+  }
+
+  public removeUserFromList(user: string){
+    this.emitAsync('removeUserFromList', user, )
   }
 }
 

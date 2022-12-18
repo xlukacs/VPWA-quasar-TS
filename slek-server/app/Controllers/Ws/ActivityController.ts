@@ -65,4 +65,23 @@ export default class ActivityController {
 
     socket.broadcast.emit('user:status', auth.user, status)
   }
+
+  public async sendInvite({ socket }: WsContextContract, { channel, user }: {channel:string, user:string} ) { 
+    console.log("Invite SERVER", user, channel)
+    const userData = await User.findByOrFail('username', user)
+    const channelData = await Channel.findByOrFail('name', channel)
+
+
+    const inviteExists = await Database.from('channel_users').where('channel_id','=', channelData.id).where('user_id','=', userData.id)
+    
+    if(inviteExists.length == 0){
+      await Database.table('channel_users').insert({
+        user_id: userData.id,
+        channel_id: channelData.id,
+      })
+    }    
+
+    socket.broadcast.emit('user:gotInvited', userData.username, channelData)
+    console.log("EMIT SERVER SIDE", userData.username, channelData)
+  }
 }

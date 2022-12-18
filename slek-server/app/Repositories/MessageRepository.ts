@@ -14,6 +14,9 @@ export default class MessageRepository implements MessageRepositoryContract {
       .firstOrFail()
       
       return channel.messages.map((message) => message.serialize() as SerializedMessage)
+    }else{
+      let temp:SerializedMessage[] = []
+      return temp
     }
   }
 

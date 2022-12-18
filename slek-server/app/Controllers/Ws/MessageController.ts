@@ -96,23 +96,19 @@ export default class MessageController {
 
   }
 
-  public async sendInvite({ socket }: WsContextContract, data: any ) { 
-    const user = await User.findByOrFail('username', data.user)
-    const channel = await Channel.findByOrFail('name', data.channel)
-
-    await Database.table('channel_users').insert({
-      user_id: user.id,
-      channel_id: channel.id,
-    })
-
-    socket.broadcast.emit('user:gotInvited', user.username, channel)
-  }
-
   public async broadcastTyping({ socket,auth }: WsContextContract, data: any ) { 
     socket.broadcast.emit('user:newMessageTyped', auth.user?.username, data)
   }
 
   public async userJoinedChannel({ socket,auth }: WsContextContract, data: any ) { 
     socket.broadcast.emit('user:userJoinedChannel', auth.user, data)
+  }
+
+  public async removeChannel({ socket }: WsContextContract, data: any ) { 
+    socket.broadcast.emit('channel:channelRemoved', data)
+  }
+
+  public async removeUserFromList({ socket, auth }: WsContextContract, data: any ) { 
+    socket.broadcast.emit('channel:removeUserFromList', data, auth.user?.username)
   }
 }

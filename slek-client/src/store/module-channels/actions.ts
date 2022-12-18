@@ -65,7 +65,6 @@ const actions: ActionTree<ChannelsStateInterface, StateInterface> = {
             
             let innerPayload = {user: rootState.auth.user?.username, channel: tempChannel.name}
             const what = await api.get('channels/acceptInvitation', { params: innerPayload })
-            console.log(what)
           }
 
           /*let innerPayload = {user: rootState.auth.user?.username, channel: tempChannel.name}
@@ -90,6 +89,9 @@ const actions: ActionTree<ChannelsStateInterface, StateInterface> = {
       
       ActivityService.setStatus(user.status, user.username);
     }
+
+    //console.log(state.channels)
+    //console.log(state.activeChannel)
   },
 
   async addChannel({ commit, rootState }, data: Channel ) {
@@ -110,29 +112,42 @@ const actions: ActionTree<ChannelsStateInterface, StateInterface> = {
   },
 
   async addChannelToList({commit}, data: any){
-    console.log(data)    
+    console.log("ADDING CHANNEL", data)
     let tempChannel = data.channel
     tempChannel.isValid = data.isValid
     commit('ADD_CHANNEL', tempChannel)
   },
 
   async leaveChannel({ commit, rootState, state }, channel: string ) {
-    const user = rootState.auth.user
-    // console.log(user)
+    // const user = rootState.auth.user
+    // // console.log(user)
 
-    const payload = { channel: channel, user: user?.username }
+    // const payload = { channel: channel, user: user?.username }
 
-    const response = await api.delete<Channel>('channels/channel_user', { data: payload })
+    // const response = await api.delete<Channel>('channels/channel_user', { data: payload })
 
-    this.dispatch('channels/removeChannel', channel);
+    // this.dispatch('channels/removeChannel', channel);
 
-    //console.log(state.messages)
+    // //console.log(state.messages)
 
-    await channelService.in(channel)?.removeChannel(channel)
+    // await channelService.in(channel)?.removeChannel(channel)
 
+    // channelService.leave(channel)
+
+    // return response.data
+
+    //bradcast user removal
+    if(rootState.auth.user?.username)
+      await channelService.in(channel)?.removeUserFromList(rootState.auth.user?.username)
+
+    //remove from db
+    const payload_revoke = { user: rootState.auth.user?.username, channel: channel }
+    await api.get('channels/revokeInvite', { params: payload_revoke })
+
+    //leave itself
     channelService.leave(channel)
-
-    return response.data
+    console.log(channelService.in('general'))
+    commit('SET_ACTIVE', 'general')
   },
 
   async closeChannel({ commit, rootState, state }, channel: string ) {
@@ -156,6 +171,13 @@ const actions: ActionTree<ChannelsStateInterface, StateInterface> = {
     return response.data
   },
 
+  leaveChannelAndJoinGeneral({commit}, channel: string){
+    channelService.leave(channel)
+
+    console.log(channelService.in('general'))
+    commit('SET_ACTIVE', 'general')
+  },
+
   async removeChannel ({ commit }, channel: string) {
     commit('CLEAR_CHANNEL', channel)
 
@@ -163,25 +185,17 @@ const actions: ActionTree<ChannelsStateInterface, StateInterface> = {
   },
 
   async setActiveChannel({commit, rootState, state}, channel: string) {
-    
     const user = rootState.auth.user
     const payload = { channel: channel, user: user?.username }
     
     const users = await api.get('channels/users_in_chat', { params: payload });
-    // console.log(users.data)
     
     var parsedUsers:User[] = []
     users.data.forEach((user: { id: number; email: string; createdAt: string; updatedAt: string; username: string, picName: string, status: string }) => {
       parsedUsers.push({ id: user.id, email: user.email, createdAt: user.createdAt, updatedAt: user.updatedAt, username: user.username, picName: user.picName, status: user.status })
     });
     
-    // console.log(parsedUsers)
-    //console.log(channel)
-    
     commit('SET_USERS', { parsed: parsedUsers as User[], channel } )
-    //commit('CHANNEL_ADDED', { channel, messages: [] as unknown as SerializedMessage, members: {} as User[] })
-    //console.log(state.usersInChat[channel])
-    
     
     commit("SET_USER_STATUS", { user: rootState.auth.user?.id, status: rootState.auth.user?.status })
     let temp = rootState.auth.user?.status ? rootState.auth.user?.status : 'offline'
@@ -203,22 +217,33 @@ const actions: ActionTree<ChannelsStateInterface, StateInterface> = {
   },
 
   async inviteUser({ commit }, { channel, user } : { channel: string, user: string }){
-    const payload = { user: user, channel: channel }
+    //const payload = { user: user, channel: channel }
     
-    await api.get('channels/createInvitation', { params: payload })
-    // let service = channelService.in(channel)
+    //await api.get('channels/createInvitation', { params: payload })
 
-    // await service?.sendInvite(channel, user)
+    try {
+      console.log("INVITE ACTIVITY")
+      await ActivityService.sendInvite(channel, user)
+      
+    } catch (error) {
+      console.log("SMH went wrong here.")    
+      console.log(error)    
+    }
   },
 
   async setStatus ({ commit, rootState }, status: string ) {
+    //status in global array 
     commit("SET_USER_STATUS", { user: rootState.auth.user?.id, status: status })
-
+    
+    //status for others
     const payload = { user: rootState.auth.user?.username, data: status }
-
     await ActivityService.setStatus(status, rootState.auth.user?.username)
 
+    //save also on backend for next login
     await api.get('user/setStatus', { params: payload })
+
+    //update clientside as well
+    this.dispatch('user/setOwnStatus', status)
   },
 
   async setUserStatus({ commit }, { user, status }: { user: User, status: string }){

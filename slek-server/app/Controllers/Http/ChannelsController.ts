@@ -77,10 +77,14 @@ export default class ChannelsController {
     //console.log(user.$attributes)
     //console.log(channel.$attributes)
 
-    await Database.table('channel_users').insert({
-      user_id: user.id,
-      channel_id: channel.id,
-    })
+    const inviteExists = await Database.from('channel_users').where('channel_id','=', channel.id).where('user_id','=', user.id)
+    
+    if(inviteExists.length == 0){
+      await Database.table('channel_users').insert({
+        user_id: user.id,
+        channel_id: channel.id,
+      })
+    }
   }
 
   async getValidStatus({ request }: HttpContextContract) {
