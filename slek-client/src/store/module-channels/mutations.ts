@@ -59,7 +59,7 @@ const mutation: MutationTree<ChannelsStateInterface> = {
   },
   SET_USER_STATUS(state, { user, status }: { user: number, status: string }){
     state.statuses[user] = status
-    console.log(state.statuses)
+    //console.log(state.statuses)
   },
   ADD_TYPER(state, { username, message} : {username:string, message:string}){
     let channelName = state.activeChannel?.name ? state.activeChannel?.name : 'general'
@@ -116,22 +116,7 @@ const mutation: MutationTree<ChannelsStateInterface> = {
     } catch (error) {
       console.log("User tried to join this chat without permission.")
     }
-  },
-  // CLEAR_TYPER(state, username:string){
-  //   let channelName = state.activeChannel?.name ? state.activeChannel?.name : 'general'
-
-  //   var found = false
-  //   var foundIndex = 0
-  //   for (let i = 0; i < state.activeTypers[channelName].length; i++) {
-  //     const typer = state.activeTypers[channelName][i];
-  //     if(typer.username == username || found){
-  //       found = true
-  //       foundIndex = i
-  //     }
-  //   }
-
-  //   delete state.activeTypers[channelName][foundIndex]
-  // }
+  }
 }
 
 export default mutation

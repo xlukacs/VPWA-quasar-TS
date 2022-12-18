@@ -354,6 +354,15 @@ export default defineComponent({
       },
       deep: true
     },
+    // typerCount: {
+    //   handler () {
+    //     console.log(this.typerCount)
+    //   },
+    //   deep: true
+    // },
+    typerCount(newVal, oldVal){
+      console.log(newVal)
+    },
     userStatus(newVal, oldVal){
       if(newVal == 'online')
         this.userStatusColor = 'green'

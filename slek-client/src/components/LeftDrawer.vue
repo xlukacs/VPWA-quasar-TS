@@ -17,7 +17,7 @@
         ></q-avatar>
       </q-item-section>
       <q-item-section>{{ channel.name }}</q-item-section>
-      <q-item-section v-if="channel.valid">{{ lastMessageOf(channel.name)?.content || 'Placeholder text...' }}</q-item-section>
+      <q-item-section v-if="channel.valid">{{ trimMessage(lastMessageOf(channel.name)?.content || 'Placeholder text...') }}</q-item-section>
       <q-item-section v-if="!channel.valid">
         <q-btn color="primary" dense icon="check" label="Accept" @click="acceptInvitation(channel.name)" />
         <q-btn color="negative" dense icon="close" class="q-mt-xs" label="Deny" @click="denyInvitation(channel.name)" />
@@ -210,6 +210,9 @@ export default defineComponent({
     },
     testFunc () {
       console.log(this.createChannel)
+    },
+    trimMessage(message:string){
+      return message.length > 20 ? message.substring(0, 20) + "…" : message
     }
   },
   beforeMount () {

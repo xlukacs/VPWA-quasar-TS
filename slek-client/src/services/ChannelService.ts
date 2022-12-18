@@ -38,13 +38,11 @@ class ChannelSocketManager extends SocketManager {
     })
 
     this.socket.on('user:leave', async (username: string, channel: string) => {
-      console.log('Remove channel' + username, channel)
       if(store.state.auth.user?.username == username)
         store.dispatch('channels/removeChannel', channel, { root: true })
     })
 
     this.socket.on('user:removeFromChatUsers', async (username: string, channel: string) => {
-      console.log("OWN EMIT")
       let payload = {channel: channel, user: username } 
       store.dispatch('channels/removeUserFromChannel', payload)
     })
@@ -53,7 +51,6 @@ class ChannelSocketManager extends SocketManager {
       //console.log('user:newMessageTyped' + username + message)
       if(store.state.auth.user?.username != username){
         let payload = {message: message, username: username } 
-        // console.log(payload)
         store.dispatch('channels/addTyper', payload, { root: true })
       }
     })

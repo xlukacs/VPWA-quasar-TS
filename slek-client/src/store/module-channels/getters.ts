@@ -40,18 +40,19 @@ const getters: GetterTree<ChannelsStateInterface, StateInterface> = {
     }
   },
   getStatuses (context) {
-    console.log(context.statuses)
+    //console.log(context.statuses)
     return context.statuses
   },
   getTyperCount(context){
-    if(context.activeTypers.public){
-      return context.activeTypers.public.length ? context.activeTypers.public.length : 0
+    if(context.activeChannel?.name && context.activeTypers[context.activeChannel.name]){
+      return context.activeTypers[context.activeChannel.name].length > 0 ? context.activeTypers[context.activeChannel.name].length : 0
     }
 
     return 0
   },
   getTypers(context){
-    return context.activeTypers.public
+    const tempChannelName = context.activeChannel?.name ? context.activeChannel?.name : 'general'
+    return context.activeTypers[tempChannelName]
   }
 }
 

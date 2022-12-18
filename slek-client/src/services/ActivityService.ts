@@ -39,7 +39,7 @@ class ActivitySocketManager extends SocketManager {
   }
 
   public setStatus (status: string, userName: string | undefined) {
-    console.log("ActivityService: " + status + '/' + userName);
+    //console.log("ActivityService: " + status + '/' + userName);
     this.emitAsync('setStatus', {status:status, username:userName})
   }
 

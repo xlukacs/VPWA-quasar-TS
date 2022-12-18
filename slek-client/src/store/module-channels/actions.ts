@@ -107,23 +107,6 @@ const actions: ActionTree<ChannelsStateInterface, StateInterface> = {
   },
 
   async leaveChannel({ commit, rootState, state }, channel: string ) {
-    // const user = rootState.auth.user
-    // // console.log(user)
-
-    // const payload = { channel: channel, user: user?.username }
-
-    // const response = await api.delete<Channel>('channels/channel_user', { data: payload })
-
-    // this.dispatch('channels/removeChannel', channel);
-
-    // //console.log(state.messages)
-
-    // await channelService.in(channel)?.removeChannel(channel)
-
-    // channelService.leave(channel)
-
-    // return response.data
-
     //bradcast user removal
     if(rootState.auth.user?.username)
       await channelService.in(channel)?.removeUserFromList(channel)
@@ -249,7 +232,6 @@ const actions: ActionTree<ChannelsStateInterface, StateInterface> = {
   }, 
 
   async removeUserFromChannel({ commit }, { channel, user }: { channel: string, user: string }){
-    console.log("THIS TOP", channel, user)
     const payload = { user: user, data: 'dummy' }
 
     const userObject = await api.get('user/getUser', { params: payload })
