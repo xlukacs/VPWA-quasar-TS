@@ -1,4 +1,6 @@
-/join [CHANNEL] doesnt find endpoint to fetch availability
+/join [CHANNEL] doesnt find endpoint to fetch availability - to join a created but not visible channel
+	|
+	- add to public automatically
 
 prompt for leaving and deleting channels
 
@@ -30,6 +32,7 @@ maybe deny user list load-in if user is not part of chat
 
  - user status top left again???
  
-visibility for notifications
-change to @mention from #mention
+ - visibility for notifications
+
+ - change to @mention from #mention
 

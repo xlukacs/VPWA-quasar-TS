@@ -123,9 +123,6 @@ export default defineComponent({
       activeUsername: 'getUserName',
       ownId: 'getOwnId'
     }),
-    // ...mapGetters('users', {
-    //   getUserStatus: 'getu'
-    // }),
   },
   watch: {
     activeChannelName(oldVal, newVal){
@@ -133,25 +130,17 @@ export default defineComponent({
         this.hideTopNavigator = false
     },
     channelOwner(newVal, oldVal){
-      //console.log(newVal + '-' + oldVal)
-      //console.log(this.usersInChat)
     }
   },
   mounted(){
-    // console.log(this.channelOwner)
-    // this.isUserModerator = this.$store.state.auth.user?.id == this.$store.state.channels.activeChannel.owner ? true : false
-    
-    //this.ownId = this.$store.state.auth.user?.id ? this.$store.state.auth.user?.id : 0
   },
   methods: {
     userSettings(user: User){
       this.userSettingsPopup = true
 
       this.userToReport = user.username
-      // console.log('//'+this.userToReport)
     },
-    statusColor(status: string){
-      //console.log('Status' + status)  
+    statusColor(status: string){  
       if(status == 'online')
         return 'green'
       else if(status == 'offline')
@@ -161,22 +150,15 @@ export default defineComponent({
       else
         return 'red' //DEFAULT to offline if user is not connected
     },
-    // ...mapMutations('channels', {
-    //   setActiveChannel: 'SET_ACTIVE'
-    // }),
     ...mapActions('channels', ['closeChannel','leaveChannel','join','setActiveChannel']),
     ...mapActions('user', ['reportUser', 'kickUser']),
     reportUserMethod(user:string){
-      //console.log(user)
       this.reportUser(user)
     },
     kickUserMethod(user:string){
-      //console.log(user)
       this.kickUser(user)
     },
     leaveCurrentChannel(){
-      //TODO prompt
-      //console.log(this.activeChannelName)
       this.leaveChannel(this.activeChannelName)
     
       setTimeout(() => {
@@ -184,8 +166,6 @@ export default defineComponent({
       }, 200);
     },
     closeCurrentChannel(){
-      //TODO prompt
-      //console.log(this.activeChannelName)
       this.closeChannel(this.activeChannelName)
 
       setTimeout(() => {

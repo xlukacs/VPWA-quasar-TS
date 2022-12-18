@@ -169,18 +169,9 @@
             :avatar="getAuthorPicture()"
           />
         </q-scroll-area>
-        <div v-if="typerCount == 1" class="col-1 q-ml-md special-zone">
+        <!-- Should be == 1, but for demonstration I changed it to activate between (0 - 3> -->
+        <div v-if="typerCount > 0 && typerCount < 4" class="col-1 q-ml-md special-zone">
           <q-spinner-dots size="2rem"></q-spinner-dots>
-          <!-- <q-btn
-            flat
-            unelevated
-            text-color="white"
-            class="q-ml-sm no-hover-state"
-            label="Doe is typing..."
-          >
-            <q-tooltip> The currenlty typed text by the other user </q-tooltip>
-          </q-btn> -->
-
           <q-btn
             flat
             unelevated
@@ -193,7 +184,8 @@
             <q-tooltip> {{ typer.message }} </q-tooltip>
           </q-btn>
         </div>
-        <div v-if="typerCount > 1" class="col-1 q-ml-md">
+        <!-- Should be for more than 1, but for demonstration I changed it to a higher number -->
+        <div v-if="typerCount > 4" class="col-1 q-ml-md">
           <q-spinner-dots size="2rem"></q-spinner-dots>
           <span class="q-ml-sm">Multiple people are typing...</span>
         </div>
@@ -372,7 +364,6 @@ export default defineComponent({
     newMessageText(newVal, oldVal){
       console.log(newVal)
       
-      //console.log(this.$store.state.channels.activeTypers)
       let service = channelService.in(this.activeChannel)
       service?.broadcastTyping(newVal)
     },
@@ -381,21 +372,11 @@ export default defineComponent({
       let service = channelService.in(oldVal)
       service?.broadcastTyping('')
     }
-    // typers(newVal){
-    //   console.log(newVal)
-    // }
-    // typerCount: {
-    //   handler(){
-    //     console.log("VALCHANGE")
-    //   },
-    //   deep: true
-    // }
   },
   data () {
     return {
       isHamburgerOpen: false,
       showTopHamburger: false,
-      // channelSearchQuery: '',
       leftDrawerOpen: true,
       rightDrawerOpen: true,
       newMessageText: '',
@@ -421,11 +402,9 @@ export default defineComponent({
       this.userToReport = user.username
     },
     reportUserMethod(user:string){
-      //console.log(user)
       this.reportUser(user)
     },
     kickUserMethod(user:string){
-      //console.log(user)
       this.kickUser(user)
     },
     sendUpdate(){
@@ -454,14 +433,19 @@ export default defineComponent({
         user: user?.username
       }
 
-      const channelAvailability = await api.get('channels/getChannelAvailability', { params: payload })
-      console.log(channelAvailability.data)
-
       try {
         const isPublic = await api.get('channels/getChannelVisibility', { params: payload })
         console.log(isPublic)
         
         if(isPublic.data || this.channelOwner == user?.id){
+          console.log('SETTING ACTIVE CHANNEL')
+          
+          let innerPayload = {user: this.$store.state.auth.user?.username, channel: channel}
+          await api.get('channels/acceptInvitation', { params: innerPayload })
+
+          //a bit stupid to reload everything but if it works, it works... what else can a bit of a time crisis create...
+          this.populateChannelList()
+
           this.setActiveChannel(channel)
         }else{
           this.setError('Cant join a private channel without invitation!')
@@ -519,9 +503,6 @@ export default defineComponent({
     },
 
     async send () {
-      //this.setActiveChannel('general')
-      //console.log(this.activeChannel)
-
       let isCommand = false
       if(this.newMessageText[0] === '/')
         isCommand = true
@@ -574,7 +555,7 @@ export default defineComponent({
       }
     },
     ...mapActions('auth', ['logout']),
-    ...mapActions('channels', ['addMessage','leaveChannel', 'inviteUser', 'setStatus','addChannel','setActiveChannel','revokeUser']),
+    ...mapActions('channels', ['addMessage','leaveChannel', 'inviteUser', 'setStatus','addChannel','setActiveChannel','revokeUser','populateChannelList']),
     ...mapActions('user', ['setError', 'loadStatus','kickUser', 'reportUser']),
     isMine (message: SerializedMessage): boolean {
       return message.author.id === this.currentUser

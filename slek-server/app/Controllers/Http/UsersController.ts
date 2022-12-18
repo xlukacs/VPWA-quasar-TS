@@ -65,6 +65,7 @@ export default class UsersController {
 
     async getStatuses({ request } : HttpContextContract){
         const users = await User.all();
+    
 
         return users
     }

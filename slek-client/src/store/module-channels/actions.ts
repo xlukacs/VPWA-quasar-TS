@@ -57,32 +57,20 @@ const actions: ActionTree<ChannelsStateInterface, StateInterface> = {
 
           commit('ADD_CHANNEL', tempChannel)
 
-          //console.log("Joining " + tempChannel.name)
           const partOfChannel = (await api.get('channels/isUserValidInChannel', {params: { user: rootState.auth.user?.id, channel: tempChannel.index }})).data
 
-          if(partOfChannel[0].valid){
+          if(tempChannel.isPublic || partOfChannel[0].valid){
             this.dispatch('channels/join', tempChannel.name, { root: true })
             
             let innerPayload = {user: rootState.auth.user?.username, channel: tempChannel.name}
             const what = await api.get('channels/acceptInvitation', { params: innerPayload })
           }
-
-          /*let innerPayload = {user: rootState.auth.user?.username, channel: tempChannel.name}
-          try {
-            const what = await api.get('channels/acceptInvitation', { params: innerPayload })
-            console.log(what)
-          } catch (error) {
-            await api.get('channels/createInvitation', { params: innerPayload })
-            await api.get('channels/acceptInvitation', { params: innerPayload })
-          }*/
         }
       }
     }
 
-    //payload = {user: rootState.auth.user?.username, data: 'temp'}
-    let usersData:User[] = (await api.get('user/getUserStatuses')).data
-
-    //console.log(usersData)
+    const dataFetched = (await api.get('user/getUserStatuses'))
+    let usersData:User[] = dataFetched.data
 
     for (let i = 0; i < usersData.length; i++) {
       const user = usersData[i];
@@ -193,6 +181,7 @@ const actions: ActionTree<ChannelsStateInterface, StateInterface> = {
     var parsedUsers:User[] = []
     users.data.forEach((user: { id: number; email: string; createdAt: string; updatedAt: string; username: string, picName: string, status: string }) => {
       parsedUsers.push({ id: user.id, email: user.email, createdAt: user.createdAt, updatedAt: user.updatedAt, username: user.username, picName: user.picName, status: user.status })
+    
     });
     
     commit('SET_USERS', { parsed: parsedUsers as User[], channel } )
