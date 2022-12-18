@@ -161,7 +161,7 @@
             v-bind:key="message.id"
             :name="message.author.email"
             :text="[message.content]"
-            :stamp="message.createdAt"
+            :stamp="formatDate(message.createdAt)"
             :sent="isMine(message)"
             :bg-color="getColor(message)"
             :text-color="isMine(message) ? 'white' : 'black'"
@@ -309,6 +309,7 @@ import { QScrollArea } from 'quasar'
 import { api } from 'src/boot/axios'
 import ErrorPrompt from 'src/components/ErrorPrompt.vue'
 import { channelService } from 'src/services'
+import { date } from 'quasar'
 
 export default defineComponent({
   components: { LeftDrawer, RightDrawer, ErrorPrompt },
@@ -578,6 +579,9 @@ export default defineComponent({
     },
     fetchUserStatus(){
       this.loadStatus()
+    },
+    formatDate(raw:any){
+      return date.formatDate(raw, 'YYYY-MMM-DD HH:mm:ss')
     }
   },
   setup () {
