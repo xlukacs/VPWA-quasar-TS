@@ -1,4 +1,4 @@
-import { Channel, RawMessage, SerializedMessage } from 'src/contracts'
+import { Channel, RawMessage, SerializedMessage, User } from 'src/contracts'
 import { channelService } from '.'
 import { BootParams, SocketManager } from './SocketManager'
 
@@ -11,6 +11,23 @@ class ChannelSocketManager extends SocketManager {
 
     this.socket.on('message', (message: SerializedMessage) => {
       store.commit('channels/NEW_MESSAGE', { channel, message })
+    })
+
+    this.socket.on('mentionUser', async (userMentioned: string, message: string) => {
+      if(store.state.auth.user?.username == userMentioned && store.state.userStatus.status == 'online'){
+        if (Notification.permission === "granted") {
+          console.log(message)
+          const notification = new Notification('You have been mentioned! ', { body: message })
+        } else if (Notification.permission !== "denied") {
+          Notification.requestPermission().then((permission) => {
+            if (permission === "granted") {
+              const notification = new Notification('You have been mentioned! ', { body: message })
+            }
+          })
+        }
+      }else if(store.state.auth.user?.username == userMentioned && store.state.userStatus.status == 'dnd'){
+        
+      }
     })
 
     this.socket.on('removeChannel', async (channelName: string) => {
@@ -44,6 +61,11 @@ class ChannelSocketManager extends SocketManager {
         store.dispatch('channels/addTyper', payload, { root: true })
       }
     })
+
+    this.socket.on('user:userJoinedChannel', async (user: User, channel: string) => {
+      let payload = {channel: channel, username: user } 
+      store.dispatch('channels/tryJoinUser', payload, { root: true })
+    })
   }
 
   public addMessage (message: RawMessage): Promise<SerializedMessage> {
@@ -74,6 +96,10 @@ class ChannelSocketManager extends SocketManager {
 
   public broadcastTyping(message: string){
     return this.emitAsync('broadcastTyping', message)
+  }
+
+  public userJoinedChannel(channel:string){
+    return this.emitAsync('userJoinedChannel', channel)
   }
 }
 

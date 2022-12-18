@@ -184,6 +184,9 @@ const actions: ActionTree<ChannelsStateInterface, StateInterface> = {
     await ActivityService.setStatus(temp, rootState.auth.user?.username)
     
     commit('SET_ACTIVE', channel)
+
+    let service = channelService.in(channel)
+    await service?.userJoinedChannel(channel)
   },
 
   async inviteUser({ commit }, { channel, user } : { channel: string, user: string }){
@@ -223,6 +226,10 @@ const actions: ActionTree<ChannelsStateInterface, StateInterface> = {
     
     const userObject = await api.get('user/getUser', { params: payload })
     commit("REMOVE_USER_FROM_CHANNEL", { channel: channel, user: userObject })
+  },
+  
+  async tryJoinUser({ commit }, { channel, user }: { channel: string, user: string }){
+    commit("TRY_JOIN_USER", { channel: channel, user: user })
   }  
   
 }

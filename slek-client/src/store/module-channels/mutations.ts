@@ -87,8 +87,20 @@ const mutation: MutationTree<ChannelsStateInterface> = {
     }
   },
   REMOVE_USER_FROM_CHANNEL ( state, { channel, user } :  { channel: string, user: User }){
-    console.log("REMOVE")
     state.usersInChat[channel].splice(state.usersInChat[channel].indexOf(user), 1)
+  },
+
+  TRY_JOIN_USER ( state, { channel, user } :  { channel: string, user: User }){
+    let found = false
+
+    for (let i = 0; i < state.usersInChat[channel].length; i++) {
+      const userObj = state.usersInChat[channel][i];
+      if(userObj.username == user.username || found)
+        found = true
+    }
+
+    if(!found)
+      state.usersInChat[channel].push(user)
   },
   // CLEAR_TYPER(state, username:string){
   //   let channelName = state.activeChannel?.name ? state.activeChannel?.name : 'general'

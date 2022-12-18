@@ -23,6 +23,16 @@ export default class MessageController {
     const message = await this.messageRepository.create(params.name, auth.user!.id, content)
     // broadcast message to other users in channel
     socket.broadcast.emit('message', message)
+
+    const res = content.match("#[a-zA-Z]*")
+   
+    if(res){
+      const mentionedUser = res[0].substring(1)
+
+      socket.broadcast.emit('mentionUser', mentionedUser, content)
+      console.log(mentionedUser)
+    }
+
     // return message to sender
     return message
   }
@@ -98,5 +108,11 @@ export default class MessageController {
   public async broadcastTyping({ socket,auth }: WsContextContract, data: any ) { 
     socket.broadcast.emit('user:newMessageTyped', auth.user?.username, data)
   }
+
+  public async userJoinedChannel({ socket,auth }: WsContextContract, data: any ) { 
+    socket.broadcast.emit('user:userJoinedChannel', auth.user, data)
+  }
+
+  
   
 }
