@@ -6,6 +6,7 @@ import { RawMessage, Channel, SerializedMessage, User } from 'src/contracts'
 import { api } from 'src/boot/axios'
 import auth from 'src/boot/auth'
 import ActivityService from 'src/services/ActivityService'
+import ChannelService from 'src/services/ChannelService'
 
 const actions: ActionTree<ChannelsStateInterface, StateInterface> = {
   async join ({ commit }, channel: string) {
@@ -55,11 +56,13 @@ const actions: ActionTree<ChannelsStateInterface, StateInterface> = {
         if(!found){
           let tempChannel:Channel = { name: element.name, index: element.index, color: element.color, isPublic: element.isPublic, owner: element.owner, valid: element.valid }
 
-          commit('ADD_CHANNEL', tempChannel)
-
+          
           const data  = (await api.get('channels/isUserValidInChannel', {params: { user: rootState.auth.user?.id, channel: tempChannel.index }}))
-          console.log(data, "data")
-          if(data.data){
+          
+          //console.log("REEEEEEEEES", data)
+          
+          if(data.status == 200){
+            commit('ADD_CHANNEL', tempChannel)
             let partOfChannel = data.data;   
             //console.log(partOfChannel, "partOfChannel")
 
@@ -155,6 +158,7 @@ const actions: ActionTree<ChannelsStateInterface, StateInterface> = {
   },
 
   async removeChannel ({ commit }, channel: string) {
+    //await ChannelService.leave(channel) //TODO maybe not even needed
     commit('CLEAR_CHANNEL', channel)
 
     commit('REMOVE_CHANNEL', channel)
@@ -246,8 +250,7 @@ const actions: ActionTree<ChannelsStateInterface, StateInterface> = {
   
   async tryJoinUser({ commit }, { channel, user }: { channel: string, user: User }){
     commit("TRY_JOIN_USER", { channel: channel, user: user })
-  }  
-  
+  }    
 }
 
 export default actions

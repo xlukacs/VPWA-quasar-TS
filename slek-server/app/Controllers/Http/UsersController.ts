@@ -77,58 +77,58 @@ export default class UsersController {
         return user;
     }
 
-    async reportUser({ request } : HttpContextContract){
-        const validate = await request.validate(ReportRequestValidator)
-        console.log(validate)
+    // async reportUser({ request } : HttpContextContract){
+    //     const validate = await request.validate(ReportRequestValidator)
+    //     console.log(validate)
 
-        const reporter = await User.findByOrFail('username', validate.user)
-        const reported = await User.findByOrFail('username', validate.reported)
-        const channel = await Channel.findByOrFail('name', validate.channel)
+    //     const reporter = await User.findByOrFail('username', validate.user)
+    //     const reported = await User.findByOrFail('username', validate.reported)
+    //     const channel = await Channel.findByOrFail('name', validate.channel)
 
-        await Database.table('reports').insert({
-            user_id: reporter.id,
-            reported_id: reported.id,
-            channel_id: channel.id
-        })
+    //     await Database.table('reports').insert({
+    //         user_id: reporter.id,
+    //         reported_id: reported.id,
+    //         channel_id: channel.id
+    //     })
 
-        const reportCount = await Database.from('reports').where('reported_id','=',reported.id)
-        if(reportCount.length >= 3){
-            await Database.from('reports').where('reported_id','=',reported.id).where('channel_id','=',channel.id).delete()
-            await Database.from('channel_users').where('user_id','=',reported.id).where('channel_id','=',channel.id).delete()
-        }
-    }
+    //     /*const reportCount = await Database.from('reports').where('reported_id','=',reported.id)
+    //     if(reportCount.length >= 3){
+    //         await Database.from('reports').where('reported_id','=',reported.id).where('channel_id','=',channel.id).delete()
+    //         await Database.from('channel_users').where('user_id','=',reported.id).where('channel_id','=',channel.id).delete()
+    //     }*/
+    // }
 
-    async kickUser({ request } : HttpContextContract){
-        const validate = await request.validate(ReportRequestValidator)
-        //console.log(validate)
+    // async kickUser({ request } : HttpContextContract){
+    //     const validate = await request.validate(ReportRequestValidator)
+    //     //console.log(validate)
 
-        const reporter = await User.findByOrFail('username', validate.user)
-        const reported = await User.findByOrFail('username', validate.reported)
-        const channel = await Channel.findByOrFail('name', validate.channel)
+    //     const reporter = await User.findByOrFail('username', validate.user)
+    //     const reported = await User.findByOrFail('username', validate.reported)
+    //     const channel = await Channel.findByOrFail('name', validate.channel)
 
-        //TODO maybe create a more clevel version of this
-        await Database.table('reports').insert({
-            user_id: reporter.id,
-            reported_id: reported.id,
-            channel_id: channel.id
-        })
+    //     //TODO maybe create a more clevel version of this
+    //     await Database.table('reports').insert({
+    //         user_id: reporter.id,
+    //         reported_id: reported.id,
+    //         channel_id: channel.id
+    //     })
         
-        await Database.table('reports').insert({
-            user_id: reporter.id,
-            reported_id: reported.id,
-            channel_id: channel.id
-        })
+    //     await Database.table('reports').insert({
+    //         user_id: reporter.id,
+    //         reported_id: reported.id,
+    //         channel_id: channel.id
+    //     })
 
-        await Database.table('reports').insert({
-            user_id: reporter.id,
-            reported_id: reported.id,
-            channel_id: channel.id
-        })
+    //     await Database.table('reports').insert({
+    //         user_id: reporter.id,
+    //         reported_id: reported.id,
+    //         channel_id: channel.id
+    //     })
 
-        const reportCount = await Database.from('reports').where('reported_id','=',reported.id)
-        if(reportCount.length >= 3){
-            await Database.from('reports').where('reported_id','=',reported.id).where('channel_id','=',channel.id).delete()
-            await Database.from('channel_users').where('user_id','=',reported.id).where('channel_id','=',channel.id).delete()
-        }
-    }
+    //     /*const reportCount = await Database.from('reports').where('reported_id','=',reported.id)
+    //     if(reportCount.length >= 3){
+    //         await Database.from('reports').where('reported_id','=',reported.id).where('channel_id','=',channel.id).delete()
+    //         await Database.from('channel_users').where('user_id','=',reported.id).where('channel_id','=',channel.id).delete()
+    //     }*/
+    // }
 }

@@ -111,7 +111,7 @@ class ChannelService {
   private channels: Map<string, ChannelSocketManager> = new Map()
 
   public join (name: string): ChannelSocketManager {
-    console.log(name, "JOIN")
+    //console.log(name, "JOIN")
     if (this.channels.has(name)) {
       throw new Error(`User is already joined in channel "${name}"`)
     }
@@ -123,7 +123,7 @@ class ChannelService {
   }
 
   public leave (name: string): boolean {
-    console.log("Leaving channel: "  + name)
+    //console.log("Leaving channel: "  + name)
     const channel = this.channels.get(name)
 
     if (!channel) {
@@ -136,7 +136,7 @@ class ChannelService {
   }
 
   public in (name: string): ChannelSocketManager | undefined {
-    console.log(this.channels.get(name))
+    //console.log(this.channels.get(name))
     return this.channels.get(name)
   }
 }

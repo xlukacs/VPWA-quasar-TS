@@ -66,8 +66,8 @@ export default class MessageController {
 
     const reportCount = await Database.from('reports').where('reported_id','=',reported.id)
     if(reportCount.length >= 3){
-      await Database.from('reports').where('reported_id','=',reported.id).where('channel_id','=',channel.id).delete()
-      await Database.from('channel_users').where('user_id','=',reported.id).where('channel_id','=',channel.id).delete()
+      //await Database.from('reports').where('reported_id','=',reported.id).where('channel_id','=',channel.id).delete()
+      //await Database.from('channel_users').where('user_id','=',reported.id).where('channel_id','=',channel.id).delete()
 
       socket.broadcast.emit('user:leave', reported.username, channel.name)
       socket.emit('user:removeFromChatUsers', reported.username, channel.name)
@@ -87,8 +87,8 @@ export default class MessageController {
 
     const reportCount = await Database.from('reports').where('reported_id','=',reported.id)
     if(reportCount.length >= 3){
-      await Database.from('reports').where('reported_id','=',reported.id).where('channel_id','=',channel.id).delete()
-      await Database.from('channel_users').where('user_id','=',reported.id).where('channel_id','=',channel.id).delete()
+      //await Database.from('reports').where('reported_id','=',reported.id).where('channel_id','=',channel.id).delete()
+      //await Database.from('channel_users').where('user_id','=',reported.id).where('channel_id','=',channel.id).delete()
       
       socket.broadcast.emit('user:leave', reported.username, channel.name)
       socket.emit('user:removeFromChatUsers', reported.username, channel.name)

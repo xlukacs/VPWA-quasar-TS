@@ -50,18 +50,23 @@ export default class ChannelsController {
     for (let i = 0; i < channel_users.length; i++) {
       const channel = channel_users[i]
 
-      const user_data = await User.query().where('id', '=', channel.user_id).select('*')
-      users_data_list.push({
-        id: user_data[0].$attributes.id,
-        email: user_data[0].$attributes.email,
-        createdAt: user_data[0].$attributes.createdAt,
-        updatedAt: user_data[0].$attributes.updatedAt,
-        username: user_data[0].$attributes.username,
-        surname: user_data[0].$attributes.surname,
-        firstname: user_data[0].$attributes.firstname,
-        status: user_data[0].$attributes.status,
-        picName: user_data[0].$attributes.pic_name,
-      })
+      const reportCount = await Database.from('reports').where('channel_id','=', channel.channel_id).where('reported_id','=', channel.user_id)
+      //console.log("REPORT", channel, reportCount)
+
+      if(reportCount && reportCount.length < 3){
+        const user_data = await User.query().where('id', '=', channel.user_id).select('*')
+        users_data_list.push({
+          id: user_data[0].$attributes.id,
+          email: user_data[0].$attributes.email,
+          createdAt: user_data[0].$attributes.createdAt,
+          updatedAt: user_data[0].$attributes.updatedAt,
+          username: user_data[0].$attributes.username,
+          surname: user_data[0].$attributes.surname,
+          firstname: user_data[0].$attributes.firstname,
+          status: user_data[0].$attributes.status,
+          picName: user_data[0].$attributes.pic_name,
+        })
+      }
       //users_data_list.push(user_data)
     }
 
@@ -74,9 +79,12 @@ export default class ChannelsController {
     const user = await User.findByOrFail('username', validate.user)
     const channel = await Channel.findByOrFail('name', validate.channel)
 
-    //console.log(user.$attributes)
-    //console.log(channel.$attributes)
+    console.log(user, channel)
 
+    //delete possible bann
+    await Database.from('channel_users').where('channel_id','=', channel.id).where('reported_id','=', user.id).delete()
+
+    //check for existing invite
     const inviteExists = await Database.from('channel_users').where('channel_id','=', channel.id).where('user_id','=', user.id)
     
     if(inviteExists.length == 0){
@@ -186,14 +194,15 @@ export default class ChannelsController {
     const validate = await request.validate(RemoveUserValidator)
 
     const temp = await Database.from('reports').where('channel_id','=', validate.channel).where('reported_id','=',validate.user)
-    
+    //console.log(temp)
+
     if(temp.length < 3){
       let res = await Database.from("channel_users").where('channel_id','=', validate.channel).where('user_id','=',validate.user).select('valid')
-      console.log("RET: ", res)
+      //console.log("RET: ", res)
       return res
     }
     else{
-      console.log("RES null")
+      //console.log("RES null")
       return null
     }
   }

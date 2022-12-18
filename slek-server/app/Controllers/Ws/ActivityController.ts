@@ -70,6 +70,13 @@ export default class ActivityController {
     const userData = await User.findByOrFail('username', user)
     const channelData = await Channel.findByOrFail('name', channel)
 
+    console.log(userData, channelData)
+    //delete possible bann
+    try {
+      await Database.from('reports').where('channel_id','=', channelData.id).where('reported_id','=', userData.id).delete()
+    } catch (error) {
+      console.log(error)
+    }
 
     const inviteExists = await Database.from('channel_users').where('channel_id','=', channelData.id).where('user_id','=', userData.id)
     
