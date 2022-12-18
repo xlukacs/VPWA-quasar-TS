@@ -108,7 +108,7 @@ export default class MessageController {
     socket.broadcast.emit('channel:channelRemoved', data)
   }
 
-  public async removeUserFromList({ socket, auth }: WsContextContract, data: any ) { 
-    socket.broadcast.emit('channel:removeUserFromList', data, auth.user?.username)
+  public async removeUserFromList({ socket, auth }: WsContextContract, channel: any ) { 
+    socket.broadcast.emit('channel:removeUserFromList', channel, auth.user?.username)
   }
 }

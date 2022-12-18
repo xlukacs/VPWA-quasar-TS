@@ -100,8 +100,8 @@ class ChannelSocketManager extends SocketManager {
     this.emitAsync('userJoined', channel)
   }
 
-  public removeUserFromList(user: string){
-    this.emitAsync('removeUserFromList', user, )
+  public removeUserFromList(channel: string){
+    this.emitAsync('removeUserFromList', channel)
   }
 }
 

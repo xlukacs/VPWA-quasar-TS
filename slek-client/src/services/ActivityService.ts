@@ -23,11 +23,9 @@ class ActivitySocketManager extends SocketManager {
     })
 
     this.socket.on('user:gotInvited', async (username: string, channel: Channel) => {
-      console.log(username, channel, 'INVITE')
       if(store.state.auth.user?.username == username){
         let payload = {channel: channel, isValid: false } 
         store.dispatch('channels/addChannelToList', payload, { root: true })
-        console.log("DISPATCH INVITE", payload)
       }
     })
 
@@ -46,7 +44,6 @@ class ActivitySocketManager extends SocketManager {
   }
 
   public sendInvite (channel: string, user: string) {
-    console.log('EMIT invite client', channel, user)
     this.emitAsync('sendInvite', { channel:channel, user:user })
   }  
 }

@@ -112,9 +112,9 @@ const actions: ActionTree<ChannelsStateInterface, StateInterface> = {
   },
 
   async addChannelToList({commit}, data: any){
-    console.log("ADDING CHANNEL", data)
     let tempChannel = data.channel
     tempChannel.isValid = data.isValid
+
     commit('ADD_CHANNEL', tempChannel)
   },
 
@@ -138,15 +138,15 @@ const actions: ActionTree<ChannelsStateInterface, StateInterface> = {
 
     //bradcast user removal
     if(rootState.auth.user?.username)
-      await channelService.in(channel)?.removeUserFromList(rootState.auth.user?.username)
+      await channelService.in(channel)?.removeUserFromList(channel)
 
     //remove from db
     const payload_revoke = { user: rootState.auth.user?.username, channel: channel }
     await api.get('channels/revokeInvite', { params: payload_revoke })
 
     //leave itself
+    this.dispatch('channels/removeChannel', channel)
     channelService.leave(channel)
-    console.log(channelService.in('general'))
     commit('SET_ACTIVE', 'general')
   },
 
@@ -260,9 +260,11 @@ const actions: ActionTree<ChannelsStateInterface, StateInterface> = {
   }, 
 
   async removeUserFromChannel({ commit }, { channel, user }: { channel: string, user: string }){
+    console.log("THIS TOP", channel, user)
     const payload = { user: user, data: 'dummy' }
-    
+
     const userObject = await api.get('user/getUser', { params: payload })
+
     commit("REMOVE_USER_FROM_CHANNEL", { channel: channel, user: userObject })
   },
   

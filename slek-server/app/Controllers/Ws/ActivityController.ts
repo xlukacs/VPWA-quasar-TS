@@ -67,7 +67,6 @@ export default class ActivityController {
   }
 
   public async sendInvite({ socket }: WsContextContract, { channel, user }: {channel:string, user:string} ) { 
-    console.log("Invite SERVER", user, channel)
     const userData = await User.findByOrFail('username', user)
     const channelData = await Channel.findByOrFail('name', channel)
 
@@ -82,6 +81,5 @@ export default class ActivityController {
     }    
 
     socket.broadcast.emit('user:gotInvited', userData.username, channelData)
-    console.log("EMIT SERVER SIDE", userData.username, channelData)
   }
 }

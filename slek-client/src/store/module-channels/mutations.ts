@@ -32,7 +32,16 @@ const mutation: MutationTree<ChannelsStateInterface> = {
     state.messages[channel].push(message)
   },
   ADD_CHANNEL(state, channel:Channel) {
-    state.channels.push(channel)
+    let found = false
+
+    for (let i = 0; i < state.channels.length; i++) {
+      const channelData = state.channels[i];
+      if(channel.name ==  channelData.name || found)
+        found = true
+    }
+
+    if(!found)
+      state.channels.push(channel)
   },
   CHANNEL_ADDED (state, { channel, messages, members }: { channel: string, messages: SerializedMessage[], activeChannel:Channel, members: User[]}) {
     state.loading = false
