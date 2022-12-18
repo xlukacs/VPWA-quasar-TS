@@ -233,7 +233,9 @@ const actions: ActionTree<ChannelsStateInterface, StateInterface> = {
 
   async revokeUser({ commit }, { user, channel }: { user: string, channel: string }){
     const payload = { user: user, channel: channel }
-    await api.get('channels/revokeInvite', { params: payload })
+    //await api.get('channels/revokeInvite', { params: payload })
+
+    await ActivityService.revokeInvite(channel, user)
   },
 
   async addTyper({ commit }, { message, username }: { message: string, username: string }){

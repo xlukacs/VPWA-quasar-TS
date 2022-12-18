@@ -89,4 +89,18 @@ export default class ActivityController {
 
     socket.broadcast.emit('user:gotInvited', userData.username, channelData)
   }
+
+  public async revokeInvite({ socket }: WsContextContract, { channel, user }: {channel:string, user:string} ) { 
+    const userData = await User.findByOrFail('username', user)
+    const channelData = await Channel.findByOrFail('name', channel)
+
+    console.log(userData, channelData)
+    
+    await Database.from('channel_users')
+      .where('channel_id', channelData.id)
+      .where('user_id', userData.id)
+      .delete()  
+
+    socket.broadcast.emit('user:revokedInvite', user, channelData.name)
+  }
 }
