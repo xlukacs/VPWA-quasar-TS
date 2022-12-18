@@ -15,8 +15,11 @@ import Database from '@ioc:Adonis/Lucid/Database'
 export default class MessageController {
   constructor (private messageRepository: MessageRepositoryContract) {}
 
-  public async loadMessages({ params }: WsContextContract) {
-    return this.messageRepository.getAll(params.name)
+  public async loadMessages({ params, auth }: WsContextContract) {
+    if(auth.user?.id)
+      return this.messageRepository.getAll(params.name, auth.user?.id)
+    else
+      return this.messageRepository.getAll(params.name, -1) //FALLBACK WHICH SHOULD NEVER RUN, BUT IF IT DOES IT WILL NOT RETURN ANY RECORDS FROM DB
   }
 
   public async addMessage({ params, socket, auth }: WsContextContract, content: string) {
@@ -110,8 +113,6 @@ export default class MessageController {
   }
 
   public async userJoinedChannel({ socket,auth }: WsContextContract, data: any ) { 
-    console.log("DATA emited seen")
-    console.log(data)
     socket.broadcast.emit('user:userJoinedChannel', auth.user, data)
   }
 }

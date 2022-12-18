@@ -59,4 +59,6 @@ Route.group(() => {
 
   Route.get('getChannelVisibility', 'ChannelsController.getChannelVisibility').middleware('auth')
   Route.get('getChannelAvailability', 'ChannelsController.getChannelAvailability').middleware('auth')
+
+  Route.get('isUserValidInChannel', 'ChannelsController.isUserValidInChannel').middleware('auth')
 }).prefix('channels')

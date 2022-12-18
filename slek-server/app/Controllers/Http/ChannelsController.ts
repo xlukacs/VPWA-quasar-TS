@@ -177,4 +177,10 @@ export default class ChannelsController {
       return { status: "unused", isPublic: null };
     }
   }
+
+  async isUserValidInChannel({ request }: HttpContextContract) {
+    const validate = await request.validate(RemoveUserValidator)
+
+    return await Database.from("channel_users").where('channel_id','=', validate.channel).where('user_id','=',validate.user).select('valid')
+  }
 }
