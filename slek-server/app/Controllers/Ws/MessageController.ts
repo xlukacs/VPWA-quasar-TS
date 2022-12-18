@@ -110,9 +110,8 @@ export default class MessageController {
   }
 
   public async userJoinedChannel({ socket,auth }: WsContextContract, data: any ) { 
+    console.log("DATA emited seen")
+    console.log(data)
     socket.broadcast.emit('user:userJoinedChannel', auth.user, data)
   }
-
-  
-  
 }

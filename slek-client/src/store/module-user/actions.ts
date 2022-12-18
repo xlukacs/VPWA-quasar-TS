@@ -18,7 +18,7 @@ const actions: ActionTree<UserStateInterface, StateInterface> = {
     const payload = { user: rootState.auth.user?.username, data: 'dummyData' }
 
     const status = (await api.get('user/getStatus', { params: payload })).data[0].status
-
+    
     commit('SET_STATUS', status)
   },
   async reportUser({commit, rootState}, username:string){

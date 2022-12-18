@@ -26,7 +26,7 @@ class ChannelSocketManager extends SocketManager {
           })
         }
       }else if(store.state.auth.user?.username == userMentioned && store.state.userStatus.status == 'dnd'){
-        
+
       }
     })
 
@@ -64,6 +64,7 @@ class ChannelSocketManager extends SocketManager {
 
     this.socket.on('user:userJoinedChannel', async (user: User, channel: string) => {
       let payload = {channel: channel, username: user } 
+      //console.log(payload)
       store.dispatch('channels/tryJoinUser', payload, { root: true })
     })
   }
@@ -98,8 +99,8 @@ class ChannelSocketManager extends SocketManager {
     return this.emitAsync('broadcastTyping', message)
   }
 
-  public userJoinedChannel(channel:string){
-    return this.emitAsync('userJoinedChannel', channel)
+  public userJoinedChannel(channel: string){
+    this.emitAsync('userJoined', channel)
   }
 }
 

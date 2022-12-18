@@ -181,12 +181,21 @@ const actions: ActionTree<ChannelsStateInterface, StateInterface> = {
     
     commit("SET_USER_STATUS", { user: rootState.auth.user?.id, status: rootState.auth.user?.status })
     let temp = rootState.auth.user?.status ? rootState.auth.user?.status : 'offline'
-    await ActivityService.setStatus(temp, rootState.auth.user?.username)
+
+    try {
+      await ActivityService.setStatus(temp, rootState.auth.user?.username)
+    } catch (error) {
+      console.log(error)
+    }
     
     commit('SET_ACTIVE', channel)
-
-    let service = channelService.in(channel)
-    await service?.userJoinedChannel(channel)
+    
+    try {
+      let service = channelService.in(channel)
+      await service?.userJoinedChannel(channel)
+    } catch (error) {
+      console.log(error)
+    }
   },
 
   async inviteUser({ commit }, { channel, user } : { channel: string, user: string }){
@@ -228,7 +237,7 @@ const actions: ActionTree<ChannelsStateInterface, StateInterface> = {
     commit("REMOVE_USER_FROM_CHANNEL", { channel: channel, user: userObject })
   },
   
-  async tryJoinUser({ commit }, { channel, user }: { channel: string, user: string }){
+  async tryJoinUser({ commit }, { channel, user }: { channel: string, user: User }){
     commit("TRY_JOIN_USER", { channel: channel, user: user })
   }  
   

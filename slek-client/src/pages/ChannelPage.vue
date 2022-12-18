@@ -8,7 +8,7 @@
             <img :src="userPic" />
           </q-avatar>
           {{ loggedInUserName }}
-          <q-icon name="fiber_manual_record" :color="statusColor(statuses[currentUser])"></q-icon>
+          <q-icon name="fiber_manual_record" :color="statusColor(userStatus)"></q-icon>
           <q-btn-dropdown flat color="primary" label="Status">
             <q-list>
               <q-item clickable v-close-popup  @click="setStatus('online')">
@@ -51,7 +51,7 @@
                 <img src="https://cdn.quasar.dev/img/avatar5.jpg" />
               </q-avatar>
               {{ loggedInUserName }}
-              <q-icon name="fiber_manual_record" :color="statusColor(statuses[currentUser])"></q-icon>
+              <q-icon name="fiber_manual_record" :color="statusColor(userStatus)"></q-icon>
               <q-btn-dropdown
                 flat
                 color="primary"
