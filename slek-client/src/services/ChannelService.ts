@@ -85,12 +85,12 @@ class ChannelSocketManager extends SocketManager {
   }
 
   public kickUser (channel: string, user: string, reported: string) {
-    //console.log({ channel, user, reported })
+    console.log({ channel, user, reported })
     return this.emitAsync('kickUser', { channel, user, reported })
   }
 
   public reportUser (channel: string, user: string, reported: string) {
-    //console.log({ channel, user, reported })
+    console.log({ channel, user, reported })
     return this.emitAsync('reportUser', { channel, user, reported })
   }
 
@@ -111,6 +111,7 @@ class ChannelService {
   private channels: Map<string, ChannelSocketManager> = new Map()
 
   public join (name: string): ChannelSocketManager {
+    console.log(name, "JOIN")
     if (this.channels.has(name)) {
       throw new Error(`User is already joined in channel "${name}"`)
     }
@@ -135,7 +136,7 @@ class ChannelService {
   }
 
   public in (name: string): ChannelSocketManager | undefined {
-    //console.log(this.channels.get(name))
+    console.log(this.channels.get(name))
     return this.channels.get(name)
   }
 }

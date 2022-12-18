@@ -185,6 +185,16 @@ export default class ChannelsController {
   async isUserValidInChannel({ request }: HttpContextContract) {
     const validate = await request.validate(RemoveUserValidator)
 
-    return await Database.from("channel_users").where('channel_id','=', validate.channel).where('user_id','=',validate.user).select('valid')
+    const temp = await Database.from('reports').where('channel_id','=', validate.channel).where('reported_id','=',validate.user)
+    
+    if(temp.length < 3){
+      let res = await Database.from("channel_users").where('channel_id','=', validate.channel).where('user_id','=',validate.user).select('valid')
+      console.log("RET: ", res)
+      return res
+    }
+    else{
+      console.log("RES null")
+      return null
+    }
   }
 }

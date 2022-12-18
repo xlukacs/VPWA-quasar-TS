@@ -22,19 +22,20 @@ const actions: ActionTree<UserStateInterface, StateInterface> = {
   async reportUser({commit, rootState}, username:string){
     const payload = { user: rootState.auth.user?.username, reported: username, channel: rootState.channels.activeChannel?.name }
 
-    if(payload.channel && payload.user){
-      let service = channelService.in(payload.channel)
+    console.log(payload)
 
-      await service?.reportUser(payload.channel, payload.user, payload.reported)
+    if(payload.channel && payload.user){
+      const service = await channelService.in(payload.channel)?.reportUser(payload.channel, payload.user, payload.reported)
+
+      console.log(service)
     }
   },
   async kickUser({commit, rootState}, username:string){
     const payload = { user: rootState.auth.user?.username, reported: username, channel: rootState.channels.activeChannel?.name }
+    console.log(payload)
 
     if(payload.channel && payload.user){
-      let service = channelService.in(payload.channel)
-
-      await service?.kickUser(payload.channel, payload.user, payload.reported)
+      await channelService.in(payload.channel)?.kickUser(payload.channel, payload.user, payload.reported)
     }
   },
 

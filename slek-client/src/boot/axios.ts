@@ -51,7 +51,8 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => {
     if (DEBUG) {
-      //console.info('<- ', response)
+      // console.info('<- ', response)
+      // console.info('\n\n')
     }
 
     return response

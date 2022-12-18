@@ -57,13 +57,18 @@ const actions: ActionTree<ChannelsStateInterface, StateInterface> = {
 
           commit('ADD_CHANNEL', tempChannel)
 
-          const partOfChannel = (await api.get('channels/isUserValidInChannel', {params: { user: rootState.auth.user?.id, channel: tempChannel.index }})).data
+          const data  = (await api.get('channels/isUserValidInChannel', {params: { user: rootState.auth.user?.id, channel: tempChannel.index }}))
+          console.log(data, "data")
+          if(data.data){
+            let partOfChannel = data.data;   
+            //console.log(partOfChannel, "partOfChannel")
 
-          if(tempChannel.isPublic || partOfChannel[0].valid){
-            this.dispatch('channels/join', tempChannel.name, { root: true })
-            
-            let innerPayload = {user: rootState.auth.user?.username, channel: tempChannel.name}
-            const what = await api.get('channels/acceptInvitation', { params: innerPayload })
+            if(tempChannel.isPublic || partOfChannel[0].valid){
+              this.dispatch('channels/join', tempChannel.name, { root: true })
+              
+              let innerPayload = {user: rootState.auth.user?.username, channel: tempChannel.name}
+              const what = await api.get('channels/acceptInvitation', { params: innerPayload })
+            }
           }
         }
       }
