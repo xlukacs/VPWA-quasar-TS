@@ -1,0 +1,49 @@
+name: Build and Push the slack clone backend
+
+on:
+  push:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Determine if a tag push
+        id: determine_tag
+        run: |
+          if [[ $GITHUB_REF == refs/tags/* ]]; then
+            echo "IS_TAG=true" >> $GITHUB_ENV
+            echo "VERSION=${GITHUB_REF##*/}" >> $GITHUB_ENV
+          else
+            echo "IS_TAG=false" >> $GITHUB_ENV
+            echo "VERSION=latest" >> $GITHUB_ENV
+          fi
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: slek-server
+          file: Dockerfile
+          push: true
+          tags: |
+            ${{ secrets.DOCKER_USERNAME }}/slack_clone_backend:latest
+            ${{ secrets.DOCKER_USERNAME }}/slack_clone_backend:${{ env.VERSION }}
+          # build-args: |
+          #   API_URL=backend
+          #   UNDER_CONSTRUCTION=false
+        if: always()
+
+      - name: Log out from Docker Hub
+        run: docker logout
