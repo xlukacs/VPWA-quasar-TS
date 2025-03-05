@@ -35,7 +35,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: slek-server
-          file: Dockerfile
+          file: slek-server/Dockerfile
           push: true
           tags: |
             ${{ secrets.DOCKER_USERNAME }}/slack_clone_backend:latest
