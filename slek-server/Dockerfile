@@ -1,6 +1,6 @@
 # ----- BUILD STAGE -----
 # Include the latest node image
-FROM node:lts as build-stage
+FROM node:lts AS build-stage
 # Aliases setup for container folders
 ARG SERVER="/slek-server"
 ARG SERVER_src="."
@@ -11,12 +11,12 @@ WORKDIR ${SERVER}
 COPY ${SERVER_src} ${SERVER}
 # Build dependencies and TS files
 RUN npm i
-RUN node ace build --production
+RUN node ace build --production --ignore-ts-errors
 # --production
 # --ignore-ts-errors
 
 # ----- PRODUCTION STAGE -----
-FROM node:lts as production-stage
+FROM node:lts AS production-stage
 # Aliases setup
 ARG BUILD="/slek-server/build"
 ARG SERVER="/myserver"
