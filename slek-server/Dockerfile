@@ -11,9 +11,10 @@ WORKDIR ${SERVER}
 COPY ${SERVER_src} ${SERVER}
 # Build dependencies and TS files
 RUN npm i
-RUN node ace build --production --ignore-ts-errors
-# --production
-# --ignore-ts-errors
+# Install any missing dependencies that might be causing the error
+RUN npm install @adonisjs/scheduler --save
+# Try to build with more verbose output to help diagnose issues
+RUN node ace build --production --ignore-ts-errors --verbose
 
 # ----- PRODUCTION STAGE -----
 FROM node:lts AS production-stage
@@ -38,6 +39,8 @@ WORKDIR ${SERVER}
 COPY --from=build-stage ${BUILD} ./
 # Install production dependencies
 RUN npm ci --production
+# Ensure the scheduler package is installed in production
+RUN npm install @adonisjs/scheduler --production
 # Expose port outside container
 EXPOSE ${PORT}
 # Start server module inside the container
