@@ -44,6 +44,8 @@ jobs:
           # build-args: |
           #   API_URL=backend
           #   UNDER_CONSTRUCTION=false
+          build-args: |
+            API_URL=http://localhost:3333
         if: always()
 
       - name: Log out from Docker Hub
