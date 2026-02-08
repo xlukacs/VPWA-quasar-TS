@@ -1,6 +1,6 @@
 services:
   slack_clone:
-    image: ${DOCKER_USERNAME}/slack_clone:latest
+    image: ${DOCKER_USERNAME}/slack_clone:v1.0.0-demo
     restart: unless-stopped
     environment:
       HOST: 0.0.0.0
@@ -29,6 +29,7 @@ services:
       - slack_clone
     networks:
       - dokploy-network
+      - internal
 
 networks:
   dokploy-network:
