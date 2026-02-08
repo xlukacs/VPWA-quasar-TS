@@ -7,6 +7,7 @@ services:
       PORT: 3333
       NODE_ENV: production
       APP_KEY: ${APP_KEY}
+      APP_NAME: slek-server
       DRIVE_DISK: local
       DB_CONNECTION: pg
       PG_HOST: ${PG_HOST}
@@ -16,7 +17,7 @@ services:
       PG_DB_NAME: ${PG_DB_NAME:-vpwa}
       DEMO_LOCKED: ${DEMO_LOCKED:-true}
     networks:
-      - internal
+      - dokploy-network
 
   cloudflared:
     image: cloudflare/cloudflared:latest
@@ -27,8 +28,8 @@ services:
     depends_on:
       - slack_clone
     networks:
-      - internal
+      - dokploy-network
 
 networks:
-  internal:
-    driver: bridge
+  dokploy-network:
+    external: true

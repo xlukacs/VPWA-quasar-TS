@@ -1,0 +1,39 @@
+services:
+  postgres:
+    image: postgres:15-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: vpwa_user
+      POSTGRES_PASSWORD: vpwa_pass
+      POSTGRES_DB: vpwa
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  slack_clone:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    environment:
+      HOST: 0.0.0.0
+      PORT: 3333
+      NODE_ENV: production
+      APP_KEY: nlnpGYSTleLKKrMtkZSPJfI8tHJWMIa9
+      APP_NAME: slek-server
+      DRIVE_DISK: local
+      DB_CONNECTION: pg
+      PG_HOST: postgres
+      PG_PORT: 5432
+      PG_USER: vpwa_user
+      PG_PASSWORD: vpwa_pass
+      PG_DB_NAME: vpwa
+      DEMO_LOCKED: "false"
+    depends_on:
+      - postgres
+
+volumes:
+  pgdata:
