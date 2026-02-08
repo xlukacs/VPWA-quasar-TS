@@ -17,7 +17,7 @@ services:
       PG_DB_NAME: ${PG_DB_NAME:-vpwa}
       DEMO_LOCKED: ${DEMO_LOCKED:-true}
     networks:
-      - dokploy-network
+      - internal
 
   cloudflared:
     image: cloudflare/cloudflared:latest
@@ -28,9 +28,8 @@ services:
     depends_on:
       - slack_clone
     networks:
-      - dokploy-network
       - internal
 
 networks:
-  dokploy-network:
-    external: true
+  internal:
+    mode: bridge
