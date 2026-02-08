@@ -1,6 +1,6 @@
 services:
   slack_clone:
-    image: ${DOCKER_USERNAME}/slack_clone:v1.0.0-demo
+    image: ${DOCKER_USERNAME}/slack_clone:v1.0.1-demo
     restart: unless-stopped
     environment:
       HOST: 0.0.0.0
