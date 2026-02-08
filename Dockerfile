@@ -24,6 +24,9 @@ ENV PG_HOST=172.17.0.1
 FROM node:18-alpine AS build-stage-client
 WORKDIR /app/client
 
+ARG DEMO_LOCKED=true
+ENV DEMO_LOCKED=${DEMO_LOCKED}
+
 COPY ./slek-client/package*.json /app/client/
 
 RUN npm install

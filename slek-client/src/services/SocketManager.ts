@@ -38,7 +38,13 @@ export abstract class SocketManager implements SocketManagerContract {
   }
 
   public static createManager (uri?: string): Manager {
-    const manager = new Manager(uri, { autoConnect: false })
+    // When behind an HTTPS reverse proxy (e.g. Cloudflare Tunnel),
+    // explicitly set secure to match the page protocol to prevent mixed-content errors.
+    const isSecure = typeof window !== 'undefined' && window.location.protocol === 'https:'
+    const manager = new Manager(uri, {
+      autoConnect: false,
+      secure: isSecure
+    })
     this.manager = manager
     return manager
   }
